@@ -7,7 +7,7 @@ var qs = require('qs');
 const url = require('url')
 const { parse } = require('url')
 var axios = require('axios')
-var website_url = "http://dilbertapp.ajency.in";
+var website_url = "http://dilbert4.ajency.in/api";
 
 
 let $ = require('jquery') ;
@@ -60,7 +60,12 @@ function login(){
 
 	  					// Call idle_state function
 
-	  					 idleState(org_data.idle_time);
+	  					idleState(org_data.idle_time);
+
+              $('#loading').css('display','none');// Hide the Loading GIF
+              $('#loginDiv').css('display','none');
+              $('#contentMem').css('display','block');
+              // $location.path('/todayscard');
 
 	  				})
 
@@ -74,8 +79,6 @@ function login(){
   	})
 
   }); 
- 
-
 }
 
 function signInWithPopup () {
@@ -137,8 +140,7 @@ function signInWithPopup () {
   })
 }
 
-
- function fetchAccessTokens (code) {
+function fetchAccessTokens (code) {
 	
 	return new Promise((resolve,reject) => {
 	
@@ -155,8 +157,6 @@ function signInWithPopup () {
 	  		console.log(response.data);
 	  });
 	})
-  
-
 
 }
 
@@ -176,9 +176,12 @@ function fetchGoogleProfile (accessToken) {
 		  })
 
 
-		})
-  
+		}) 
 }
+
+
+
+
 
 
 function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set to default i.e. 1
@@ -205,6 +208,8 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
             data: data
             ,success: function(dataS) {
               console.log(dataS);
+              TodaysCardController();
+
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
                 console.log("state 4");
@@ -294,3 +299,174 @@ var get_Time = function(sumUp) { // for active, sumUp = 0, else sumUp = timeInte
 }
 
    
+
+function TodaysCardController() {
+  console.log("Calling Controller ");
+  
+  //this.d2 = describeArc(100, 130, 100, 240, 480);
+  // this.d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
+  // var _this = this;
+  // var apiToken = "";
+
+  var todaysDate = formatDate(new Date());
+
+        var date = {
+            start_date: todaysDate,
+            end_date: todaysDate,
+        };
+
+        var data = {
+          "user_id": user_data.id,
+          "api_token": user_data.api_token,
+          "date": date
+        };
+
+      getData(data);
+
+
+      // var intervalID = setInterval(function(){//$interval(function() {
+      //   console.log("Calling interval Todays Card");
+      //    getData(data);
+        
+      // },15000); // check every 15 secs
+
+
+  function toSeconds(timeString) {
+      var p = timeString.split(':');
+      return (parseInt(p[0], 10) * 3600) + (parseInt(p[1], 10) * 60);
+  }
+
+  function fill(s, digits) {
+      s = s.toString();
+      while (s.length < digits) {
+          s = '0' + s;
+      };
+      return s;
+  }
+
+  function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+      var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+      return {
+          x: centerX + (radius * Math.cos(angleInRadians)),
+          y: centerY + (radius * Math.sin(angleInRadians))
+      };
+  }
+
+  function describeArc(x, y, radius, startAngle, endAngle) {
+      var start = polarToCartesian(x, y, radius, endAngle);
+      var end = polarToCartesian(x, y, radius, startAngle);
+      var largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+      var d = [
+          'M', start.x, start.y,
+          'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y
+      ].join(' ');
+      return d;
+  }
+
+  function timeConversion(milliseconds) {
+      // Get hours from milliseconds
+      var hours = milliseconds / (1000 * 60 * 60);
+      var absoluteHours = Math.floor(hours);
+      var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
+      // Get remainder from hours and convert to minutes
+      var minutes = (hours - absoluteHours) * 60;
+      var absoluteMinutes = Math.floor(minutes);
+      var m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
+      return h + ':' + m;
+  }
+
+  function formatDate(date) {
+      var temp = new Date(date);
+
+    return temp.getFullYear() + '-' + (temp.getMonth() + 1 < 10 ? '0' + (temp.getMonth() + 1) : temp.getMonth() + 1) + '-' + (temp.getDate() < 10 ? '0' + (temp.getDate()) : (temp.getDate()));
+  }
+
+  function getWeek(date) {
+      var temp = new Date(date);
+      var onejan = new Date(temp.getFullYear(), 0, 1);
+      var temp2 = temp.getTime() - onejan.getTime();
+      return Math.ceil((((temp2) / 86400000) + onejan.getDay() + 1) / 7);
+  }
+
+  function getStartAndEndOfDate(date, isMonth) {
+      if (isMonth) {
+          var temp = new Date(date), y = temp.getFullYear(), m = temp.getMonth();
+          var firstDay = new Date(y, m, 1);
+          var lastDay = new Date(y, m + 1, 0);
+          return {
+              start: firstDay,
+              end: lastDay
+          };
+      }
+      else {
+          var curr = new Date(date);
+          var firstDay = new Date(curr.setDate(curr.getDate() - curr.getDay() + 1));
+          var lastDay = new Date(curr.setDate(curr.getDate() - curr.getDay() + 7));
+          return {
+              start: firstDay,
+              end: lastDay
+          };
+      }
+  }
+
+  function getData(data) {
+    //var _this = this;
+    if(data){
+
+          let card_data_url = website_url + '/api/data/user?' + 'user_id='+ data.user_id + 'start_date=' + data.date.start_date + 'end_date='+ data.date.end_date;
+
+            axios.get( card_data_url , {
+             headers:  {'X-API-KEY' : data.api_token},
+            },
+
+            ).then( function(response){
+              console.log(response);
+            })
+
+
+        // var t = response;
+        //     if (response.length !== 0 && response.data.length !== 0 && response.data[0].data.length !== 0) {
+        //         t = response.data[0].data[0];
+        //         //console.log(t.start_time);
+        //         _this.today = {
+        //             date: new Date(),
+        //             timeCovered: {
+        //                 hrs: t.total_time.split(':')[0],
+        //                 mins: t.total_time.split(':')[1]
+        //             },
+        //             start_time: t.start_time.replace(' ','T') + ".000Z",
+        //             end_time: t.end_time.replace(' ','T') + ".000Z",
+        //         };
+                
+        //         if (t.total_time || t.total_time !== '') {
+        //             var temp = t.total_time.split(':');
+        //             if (parseInt(temp[0], 10) >= 10) {
+        //                 _this.today.timeCompleted = 100.00;
+        //                 _this.d = describeArc(100, 70, 65, 240, (_this.today.timeCompleted * 2.4) + 240);
+        //             } else {
+        //                 var hrs = parseInt(temp[0], 10);
+        //                 var mins = parseInt(temp[1], 10);
+        //                 var minInPercentage = (mins / 60);
+        //                 var hrsInPercentage = (hrs / 10) * 100;
+        //                 _this.today.timeCompleted = (hrsInPercentage + (10 * (minInPercentage))).toFixed(2);
+        //                 //console.log(_this.today.timeCompleted);
+        //                 _this.d = describeArc(100, 70, 65, 240, (_this.today.timeCompleted * 2.4) + 240);
+        //             }
+        //         }
+        //     } else {
+        //         _this.today = {
+        //             date: new Date(),
+        //             timeCovered: {
+        //                 hrs: 0,
+        //                 mins: 0
+        //             },
+        //             start_time: 0,
+        //             end_time: 0,
+        //         };
+        //     }
+            //$route.reload();
+            //$scope.$apply(function(){});
+      
+    }
+  }
+}
