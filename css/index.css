@@ -1,0 +1,113 @@
+html, body {
+	width : 400px;
+	padding-top: 5px;
+}
+
+.alert-semi-trans {
+	opacity: 0.2;
+	position: fixed;
+	top: 10%;
+	margin-left: -1.5%;
+	z-index: 10;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.40);
+	border-color: transparent;
+}
+
+.login-footer {
+	margin-top: 140px;
+}
+
+.google-signin {
+	color: #ffffff;
+	border-color: #d43f3a;
+	background-color: #d9534f;
+}
+
+.google-signin:active {
+	color:#d43f3a;
+}
+
+.google-signin:active i{
+	-webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
+    filter: grayscale(100%);
+}
+
+.list-scroll {
+  height:250px;
+  overflow:auto;  
+  margin-top:20px;
+}
+
+.dots-with-dd .dropdown {
+	list-style: none;
+	position: relative;
+	margin-right: -40px;
+	top: 20px;
+	z-index: 20;
+}
+
+.navi-3 a.disabled {
+	color: #328282;
+	font-size: 11px;
+}
+
+.navi-3 a.active {
+	color: #000000;
+	font-size: 13px;
+	opacity: 1;
+}
+
+.page-title {
+	margin-bottom: 25px;
+}
+.success {
+	color: #4cae4c;
+}
+
+.warning {
+	color: #eea236;
+}
+
+.danger {
+	color: #d43f3a;
+}
+
+.loading_img {
+	position: fixed;
+	display: block;
+	margin-left: 30%;
+	vertical-align: middle;
+	display: none;
+}
+
+.dashboard_link {
+	color: #808080;
+	text-decoration:none;
+}
+
+a.dashboard_link:hover { 
+    color:#000000;
+}
+
+.card {
+	background-color: #ffffff;
+    /* Add shadows to create the "card" effect */
+    box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    border-radius: 5px; /* 5px rounded corners */
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.1);
+}
+
+/* Add some padding inside the card container */
+.container {
+    padding: 3px 11px;
+}
+
+.the-grid-chart {
+	margin-top: 5px;
+}

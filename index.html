@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dilbert</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/font.css" />
+    <link rel="stylesheet" href="css/styles_act.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/todays_card.css">
+    
+    <script src="renderer.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    
+  <div ng-app="dapp">
+    <div class="main" ng-controller="Controller as ctrl">
+      <div class="all-wrapper login-page" id="loginDiv">
+        <div class="login-header">
+          <h3 class="app-name">Dilbert</h3>
+          <p class="sub-title" translate="APPSUBTITLE">Track time and record work at</p>
+          <!-- <p class="sub-title">Your friendly time tracker at</p> -->
+          <div class="logo-wrapper">
+            <!-- Show logo if available -->
+            <img src="img/ajency-logo.png" alt="" class="logo">
+            <!-- Show Organistion name if logo isn't available -->
+            <h1 class="organisation-name hidden">Aditya Birla Group</h1>
+          </div>
+        </div>
+      
+
+        <div class="loading_img" id="loading">
+          <img src="img/google_g.gif" width="120px"/>
+        </div>
+
+        <div class="login-footer">
+          <p class="sub-title" translate="CONNECT_N_TRACK">Connect your Google account and leave the tracking to us!</p>
+          <button class="google-signin" onclick="login()" id="google_btn"><i class="google-g"></i> <span translate="SIGN_IN_GOOGLE">Sign in with Google</span></button>
+        </div>
+        <div class="common-footer">
+          <p class="author-name" ><span translate="BY"></span> <a href="http://ajency.in" target="_blank">Ajency.in</a></p>
+        </div>
+
+      </div>
+  
+    </div>
+    <body>
+  </div>
+
+
+    
+  </body>
+</html>
