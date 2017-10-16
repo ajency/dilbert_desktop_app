@@ -56,19 +56,19 @@
                 <li><a href="#" class="active" translate="TODAY">Today</a></li>
                 <li><a href="#" class="disabled" translate="SUMMARY">Summary</a></li>
               </ul> -->
-              <div class="dots-with-dd">
-                <a href="#" class="last-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+              <div id = "dropdown" class="dots-with-dd">
+                <a  href="#" class="last-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" onclick="addClass()"><i class="fa fa-ellipsis-v"></i></a>
                 <ul class="dropdown-menu dropdown">
                   <!-- <li><a href="http://dilbertapp.ajency.in/redirect/google" target="_blank" translate="VIEW_DASHBOARD">View Dashboard</a></li> -->
                   <!-- <li><a href="#" translate="ACTIVITY_LOG">Activity Log</a></li> -->
-                  <li><a href="#" ng-click="logout()"><i class="fa fa-btn fa-sign-out"></i> <span translate="LOGOUT"></span></a></li>
+                  <li><a href="#" onclick="logout()"><i class="fa fa-btn fa-sign-out"></i> <span> Logout </span></a></li>
                   </ul>
               </div>
             </div>
           </header>
           <div class="page-wrapper">
             <!-- <h3 class="page-title" translate="ACTIVITY_LOG">Activity Log</h3> -->
-            <h3 class="page-title">Welcome ,<span>Sujit Gawas</span>!</h3>
+            <h3 class="page-title">Welcome,<span id="name"></span>!</h3>
             <!-- <h6 class="author-name" style="text-align: center;"><a href="http://dilbertapp.ajency.in/redirect/google" style="color: #808080" target="_blank" translate="WANNA_VISIT_UR_DASHBRD">Wanna visit your Dashboard?</a></h6> -->
             <h6 class="author-name" style="text-align: center;"><a href="http://dilbertapp.ajency.in/redirect/google" class="dashboard_link" target="_blank" translate="VIEW_DASHBOARD">View Dashboard</a></h6>
         
@@ -80,8 +80,8 @@
                               <div class="the-grid-chart">
                                   <div class="svgElem">
                                       <svg viewBox="0 0 200 130" style="margin-top: 20px">
-                                          <path fill="none" stroke="#e7e7e7" stroke-width="7" d="{{$ctrl.d2}}" vector-effect="non-scaling-stroke"  />
-                                          <path  class="path" fill="none" stroke="#a0d70d" stroke-width="7" d="{{$ctrl.d}}" vector-effect="non-scaling-stroke">
+                                          <path id = "d2" fill="none" stroke="#e7e7e7" stroke-width="7" d = ""  vector-effect="non-scaling-stroke"  />
+                                          <path  id = "d1" class="path" fill="none" stroke="#a0d70d" stroke-width="7" d = "" vector-effect="non-scaling-stroke">
                                               <animate attributeName="stroke" begin="0s" end="2s"
                                               dur="2000ms" to ="#000000" />
                                           </path>
@@ -90,26 +90,26 @@
                               
                                   <div class="centered-text">
                                       <div class="g-c-time">
-                                          <strong class="big"></strong>
-                                          <small>hr</small>
-                                          <strong class="big"></strong>
+                                          <strong id = "hr" class="big"></strong>
+                                          <small > hr</small>
+                                          <strong id = "min" class="big"></strong>
 
-                                          <small>min</small>
+                                          <small> min</small>
                                       </div>
                                       <div class="g-c-legend">Covered Today</div>
                                   </div>
                               </div>
                               <h3 class="app-title normal">
                                   <span class="big">Today</span>
-                                  <span class="small"></span>
+                                  <span class="small" id = "today"></span>
                               </h3>
                               <div class="split-times">
                                   <div class="small-time work">
-                                      <time></time>
+                                      <time id = "start_time" class="big" style="color: #80af03"></time>
                                       <span class="small-title">Start Time</span>
                                   </div>
                                   <div class="small-time break">
-                                      <time></time>
+                                      <time id = "end_time" ></time>
                                       <span class="small-title">End Time</span>
                                   </div>
                               </div>

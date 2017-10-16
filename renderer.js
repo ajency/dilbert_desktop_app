@@ -7,6 +7,7 @@ var qs = require('qs');
 const url = require('url')
 const { parse } = require('url')
 var axios = require('axios')
+var moment = require('moment')
 var website_url = "http://dilbert4.ajency.in/api";
 
 
@@ -21,10 +22,32 @@ const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
 var user_data;
 var org_data;
 
+$(document).mouseup(function(e) {
+  console.log('remove dropdown');
+ var Click_todo;
+ Click_todo = $('.dots-with-dd dropdown open');
+ if (!Click_todo.is(e.target) && Click_todo.has(e.target).length === 0) {
+   $('.dots-with-dd').removeClass('open');
+ }
+});
 
 
+function addClass(){
+  console.log('inside addClass');
+  $('#dropdown').addClass('open');
+
+}
 
 
+  function logout() {
+
+        idleState(-1);
+                  
+        $('#loginDiv').css('display','block');
+        $('#contentMem').css('display','none');
+        console.log("switching the layout");
+        
+  }
 
 function login(){
   console.log("inside login function");
@@ -44,6 +67,7 @@ function login(){
 	  			
 	  			if(response.data && response.data[0].org_id){
 	  				user_data =response.data[0];
+            document.getElementById("name").innerHTML = user_data.name
 	  				let org_url = website_url + '/org/info?org_id=' + response.data[0].org_id + '&user_id=' + response.data[0].id;
 
 	  				axios.get( org_url , {
@@ -62,9 +86,7 @@ function login(){
 
 	  					idleState(org_data.idle_time);
 
-              $('#loading').css('display','none');// Hide the Loading GIF
-              $('#loginDiv').css('display','none');
-              $('#contentMem').css('display','block');
+            
               // $location.path('/todayscard');
 
 	  				})
@@ -302,7 +324,8 @@ var get_Time = function(sumUp) { // for active, sumUp = 0, else sumUp = timeInte
 
 function TodaysCardController() {
   console.log("Calling Controller ");
-  
+  let d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
+  document.getElementById("d2").setAttribute("d", d2); 
   //this.d2 = describeArc(100, 130, 100, 240, 480);
   // this.d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
   // var _this = this;
@@ -324,11 +347,11 @@ function TodaysCardController() {
       getData(data);
 
 
-      // var intervalID = setInterval(function(){//$interval(function() {
-      //   console.log("Calling interval Todays Card");
-      //    getData(data);
+      var intervalID = setInterval(function(){//$interval(function() {
+        console.log("Calling interval Todays Card");
+         getData(data);
         
-      // },15000); // check every 15 secs
+      },60000); // check every 60 secs
 
 
   function toSeconds(timeString) {
@@ -409,18 +432,72 @@ function TodaysCardController() {
       }
   }
 
+
+
   function getData(data) {
     //var _this = this;
     if(data){
 
-          let card_data_url = website_url + '/api/data/user?' + 'user_id='+ data.user_id + 'start_date=' + data.date.start_date + 'end_date='+ data.date.end_date;
+           let card_data_url = website_url + '/api/data/user?user_id='+ data.user_id + '&start_date=' + data.date.start_date + '&end_date='+ data.date.end_date;
 
-            axios.get( card_data_url , {
+            axios.get( card_data_url, {
              headers:  {'X-API-KEY' : data.api_token},
             },
 
             ).then( function(response){
+
               console.log(response);
+              $('#loading').css('display','none');// Hide the Loading GIF
+              $('#loginDiv').css('display','none');
+              $('#contentMem').css('display','block');
+
+            var t = response;
+            if (response.length !== 0 && response.data.length !== 0 && response.data[0].data.length !== 0) {
+                t = response.data[0].data[0];
+                //console.log(t.start_time);
+
+              var NowMoment = moment();
+              var eDisplayMoment = document.getElementById('today');
+              eDisplayMoment.innerHTML = NowMoment.format('Do MMMM');
+
+              document.getElementById("hr").innerHTML = t.total_time.split(':')[0];
+              document.getElementById("min").innerHTML = t.total_time.split(':')[1];
+              document.getElementById("start_time").innerHTML = moment(t.start_time.split(' ')[1], "kk:mm:ss").format("hh:mm A");
+              document.getElementById("end_time").innerHTML = moment(t.end_time.split(' ')[1], "kk:mm:ss").format("hh:mm A");
+                
+                if (t.total_time || t.total_time !== '') {
+                    var temp = t.total_time.split(':');
+                    if (parseInt(temp[0], 10) >= 10) {
+                        var time_completed = 100.00;
+                        var d = describeArc(100, 70, 65, 240, (time_completed * 2.4) + 240);
+                        document.getElementById("d1").setAttribute("d", d); 
+
+                    } else {
+                        var hrs = parseInt(temp[0], 10);
+                        var mins = parseInt(temp[1], 10);
+                        var minInPercentage = (mins / 60);
+                        var hrsInPercentage = (hrs / 10) * 100;
+                        var time_completed = (hrsInPercentage + (10 * (minInPercentage))).toFixed(2);
+                        //console.log(_this.today.timeCompleted);
+                        var d = describeArc(100, 70, 65, 240, (time_completed * 2.4) + 240);
+                        document.getElementById("d1").setAttribute("d", d); 
+
+                    }
+                }
+            } else {
+                _this.today = {
+                    date: new Date(),
+                    timeCovered: {
+                        hrs: 0,
+                        mins: 0
+                    },
+                    start_time: 0,
+                    end_time: 0,
+                };
+            }
+
+
+
             })
 
 
