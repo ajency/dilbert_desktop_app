@@ -4,9 +4,11 @@
   "description": "An app to keep track of hours spent by user on PC.",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "rebuild": "electron-rebuild --version 1.7.8 -f -w robotjs.node"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com",
   "keywords": [
     "Electron",
     "Dilbert"
@@ -14,10 +16,15 @@
   "author": "Sujit Gawas",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "~1.7.8"
+    "electron": "~1.7.8",
+    "electron-builder": "^19.37.2",
+    "electron-packager": "^9.1.0",
+    "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
     "jquery": "^3.2.1",
-    "moment": "^2.19.1"
+    "moment": "^2.19.1",
+    "qs-parser": "^0.4.8",
+    "robotjs": "^0.4.7"
   }
 }

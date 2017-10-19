@@ -1,17 +1,19 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
+const electron = require('electron')
+const {BrowserWindow} = require('electron').remote
 
 const { remote } = require('electron')
-var qs = require('qs');
 const url = require('url')
 const { parse } = require('url')
-var axios = require('axios')
+// var axios = require('axios')
 var moment = require('moment')
-var website_url = "http://dilbert4.ajency.in/api";
+var website_url = "http://dilbert4.ajency.in/api"
 
+// var robot = require("robotjs");
 
-let $ = require('jquery') ;
+let $ = require('jquery') 
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'
 const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'
@@ -19,28 +21,36 @@ const GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8101'
 const GOOGLE_CLIENT_ID = '76840133643-uka7d6nglcm3rkdfdimklkr7jtgvtk64.apps.googleusercontent.com'
 const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
 
-var user_data;
+var user_data
 var org_data;
 
-$(document).mouseup(function(e) {
-  console.log('remove dropdown');
- var Click_todo;
- Click_todo = $('.dots-with-dd dropdown open');
- if (!Click_todo.is(e.target) && Click_todo.has(e.target).length === 0) {
-   $('.dots-with-dd').removeClass('open');
- }
-});
 
+function openInBrowserWindow(){
+  console.log('inside openInBrowserWindow');
+  // $('#loading').css('display','block');
+
+  let win = new BrowserWindow({width: 800, height: 600})
+  win.loadURL('https://github.com');
+}
 
 function addClass(){
+  let $ = require('jquery') ;
+  setTimeout(function(){ 
   console.log('inside addClass');
   $('#dropdown').addClass('open');
+   }, 10);
 
 }
 
+function removeClass(){
+ let $ = require('jquery') ;
+ console.log('inside removeClass');
+ $('.dots-with-dd').removeClass('open');
+ 
+}
 
-  function logout() {
-
+function logout() {
+        let $ = require('jquery') ;
         idleState(-1);
                   
         $('#loginDiv').css('display','block');
@@ -50,8 +60,12 @@ function addClass(){
   }
 
 function login(){
+  let $ = require('jquery') ;
+
+
+
   console.log("inside login function");
-  $('#loading').css('display','block');
+   $('#loading').css('display','block');
 
   const code = signInWithPopup().then( function(code) {
   	console.log(code);
@@ -62,6 +76,8 @@ function login(){
 	  		console.log(data);
 
 	  		// API request
+      var website_url = "http://dilbert4.ajency.in/api";
+
 	  		axios.get(website_url + '/confirm?email=' + data.email + '&content=' + data, true  ).then( function(response){
 	  			console.log(response);
 	  			
@@ -103,10 +119,21 @@ function login(){
   }); 
 }
 
+
 function signInWithPopup () {
 	console.log("inside signInWithPopup");
+
+  const { parse } = require('url')
+
+  const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
+  const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'
+  const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'
+  const GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8101'
+  const GOOGLE_CLIENT_ID = '76840133643-uka7d6nglcm3rkdfdimklkr7jtgvtk64.apps.googleusercontent.com'
+  const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
+
   return new Promise((resolve, reject) => {
-    const authWindow = new remote.BrowserWindow({
+    const authWindow = new BrowserWindow({
       width: 500,
       height: 600,
       show: true,
@@ -119,8 +146,8 @@ function signInWithPopup () {
       client_id: GOOGLE_CLIENT_ID,
       scope: 'profile email',
     }
-    const authUrl = `${GOOGLE_AUTHORIZATION_URL}?${qs.stringify(urlParams)}`
-
+    // const authUrl = `${GOOGLE_AUTHORIZATION_URL}?${qs.stringify(urlParams)}`
+      const authUrl = GOOGLE_AUTHORIZATION_URL + '?response_type=code' + '&redirect_uri='+GOOGLE_REDIRECT_URI + '&client_id='+GOOGLE_CLIENT_ID+'&scope=profile email';
    console.log(authUrl);
 
     function handleNavigation (url) {
@@ -163,17 +190,20 @@ function signInWithPopup () {
 }
 
 function fetchAccessTokens (code) {
+
+  const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
+  const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'
+  const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'
+  const GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8101'
+  const GOOGLE_CLIENT_ID = '76840133643-uka7d6nglcm3rkdfdimklkr7jtgvtk64.apps.googleusercontent.com'
+  const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
+
 	
 	return new Promise((resolve,reject) => {
 	
 		console.log("inside fetchAccessTokens", code);
-	  	const response =  axios.post(GOOGLE_TOKEN_URL, qs.stringify({
-		    code : code,
-		    client_id: GOOGLE_CLIENT_ID,
-		    client_secret : CLIENT_SECRETE,
-		    redirect_uri: GOOGLE_REDIRECT_URI,
-		    grant_type: 'authorization_code',
-	  	})
+    let urlParams = 'code=' +code + '&client_id=' + GOOGLE_CLIENT_ID + '&client_secret='+ CLIENT_SECRETE + '&redirect_uri=' + GOOGLE_REDIRECT_URI + '&grant_type=authorization_code';
+	  	const response =  axios.post(GOOGLE_TOKEN_URL, urlParams
 	  	).then( function(response) {
 	  		resolve(response.data);
 	  		console.log(response.data);
@@ -185,6 +215,7 @@ function fetchAccessTokens (code) {
 
 function fetchGoogleProfile (accessToken) {
 	return new Promise ( (resolve, reject) =>{
+  const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'
 
 		const response =  axios.get(GOOGLE_PROFILE_URL, {
 		    headers: {
@@ -207,6 +238,8 @@ function fetchGoogleProfile (accessToken) {
 
 
 function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set to default i.e. 1
+  let $ = require('jquery') ;
+  var website_url = "http://dilbert4.ajency.in/api";
   
   console.log("inside idleState");
   console.log(idleInterval_C);
@@ -288,7 +321,7 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
 
 
 
-var get_Time = function(sumUp) { // for active, sumUp = 0, else sumUp = timeInterval
+function get_Time(sumUp) { // for active, sumUp = 0, else sumUp = timeInterval
   var t = new Date(); // for now
   var diff = 0;
   if(t.getMinutes() - sumUp < 10 && t.getMinutes() - sumUp >= 0) /* If the diff < 10 but diff >= 0*/
@@ -321,45 +354,39 @@ var get_Time = function(sumUp) { // for active, sumUp = 0, else sumUp = timeInte
 }
 
    
-
 function TodaysCardController() {
   console.log("Calling Controller ");
   let d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
   document.getElementById("d2").setAttribute("d", d2); 
-  //this.d2 = describeArc(100, 130, 100, 240, 480);
-  // this.d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
-  // var _this = this;
-  // var apiToken = "";
 
   var todaysDate = formatDate(new Date());
+    
+  var date = {
+        start_date: todaysDate,
+        end_date: todaysDate,
+      };
+  var data = {
+        "user_id": user_data.id,
+        "api_token": user_data.api_token,
+        "date": date
+      };
 
-        var date = {
-            start_date: todaysDate,
-            end_date: todaysDate,
-        };
+  getData(data);
+  // checkStateChange();
 
-        var data = {
-          "user_id": user_data.id,
-          "api_token": user_data.api_token,
-          "date": date
-        };
-
-      getData(data);
-
-
-      var intervalID = setInterval(function(){//$interval(function() {
+  var intervalID = setInterval(function(){//$interval(function() {
         console.log("Calling interval Todays Card");
-         getData(data);
+        getData(data);
         
       },60000); // check every 60 secs
 
 
-  function toSeconds(timeString) {
+function toSeconds(timeString) {
       var p = timeString.split(':');
       return (parseInt(p[0], 10) * 3600) + (parseInt(p[1], 10) * 60);
   }
 
-  function fill(s, digits) {
+function fill(s, digits) {
       s = s.toString();
       while (s.length < digits) {
           s = '0' + s;
@@ -367,7 +394,7 @@ function TodaysCardController() {
       return s;
   }
 
-  function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
       var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
       return {
           x: centerX + (radius * Math.cos(angleInRadians)),
@@ -375,7 +402,7 @@ function TodaysCardController() {
       };
   }
 
-  function describeArc(x, y, radius, startAngle, endAngle) {
+function describeArc(x, y, radius, startAngle, endAngle) {
       var start = polarToCartesian(x, y, radius, endAngle);
       var end = polarToCartesian(x, y, radius, startAngle);
       var largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
@@ -386,7 +413,7 @@ function TodaysCardController() {
       return d;
   }
 
-  function timeConversion(milliseconds) {
+function timeConversion(milliseconds) {
       // Get hours from milliseconds
       var hours = milliseconds / (1000 * 60 * 60);
       var absoluteHours = Math.floor(hours);
@@ -398,20 +425,20 @@ function TodaysCardController() {
       return h + ':' + m;
   }
 
-  function formatDate(date) {
+function formatDate(date) {
       var temp = new Date(date);
 
-    return temp.getFullYear() + '-' + (temp.getMonth() + 1 < 10 ? '0' + (temp.getMonth() + 1) : temp.getMonth() + 1) + '-' + (temp.getDate() < 10 ? '0' + (temp.getDate()) : (temp.getDate()));
-  }
+      return temp.getFullYear() + '-' + (temp.getMonth() + 1 < 10 ? '0' + (temp.getMonth() + 1) : temp.getMonth() + 1) + '-' + (temp.getDate() < 10 ? '0' + (temp.getDate()) : (temp.getDate()));
+}
 
-  function getWeek(date) {
+function getWeek(date) {
       var temp = new Date(date);
       var onejan = new Date(temp.getFullYear(), 0, 1);
       var temp2 = temp.getTime() - onejan.getTime();
       return Math.ceil((((temp2) / 86400000) + onejan.getDay() + 1) / 7);
   }
 
-  function getStartAndEndOfDate(date, isMonth) {
+function getStartAndEndOfDate(date, isMonth) {
       if (isMonth) {
           var temp = new Date(date), y = temp.getFullYear(), m = temp.getMonth();
           var firstDay = new Date(y, m, 1);
@@ -434,8 +461,13 @@ function TodaysCardController() {
 
 
 
-  function getData(data) {
+function getData(data) {
     //var _this = this;
+    var website_url = "http://dilbert4.ajency.in/api";
+    let $ = require('jquery') ;
+    var moment = require('moment')
+
+
     if(data){
 
            let card_data_url = website_url + '/api/data/user?user_id='+ data.user_id + '&start_date=' + data.date.start_date + '&end_date='+ data.date.end_date;
@@ -485,65 +517,27 @@ function TodaysCardController() {
                     }
                 }
             } else {
-                _this.today = {
-                    date: new Date(),
-                    timeCovered: {
-                        hrs: 0,
-                        mins: 0
-                    },
-                    start_time: 0,
-                    end_time: 0,
-                };
+
+              var NowMoment = moment();
+              var eDisplayMoment = document.getElementById('today');
+              eDisplayMoment.innerHTML = NowMoment.format('Do MMMM');
+
+               
             }
 
 
 
             })
-
-
-        // var t = response;
-        //     if (response.length !== 0 && response.data.length !== 0 && response.data[0].data.length !== 0) {
-        //         t = response.data[0].data[0];
-        //         //console.log(t.start_time);
-        //         _this.today = {
-        //             date: new Date(),
-        //             timeCovered: {
-        //                 hrs: t.total_time.split(':')[0],
-        //                 mins: t.total_time.split(':')[1]
-        //             },
-        //             start_time: t.start_time.replace(' ','T') + ".000Z",
-        //             end_time: t.end_time.replace(' ','T') + ".000Z",
-        //         };
-                
-        //         if (t.total_time || t.total_time !== '') {
-        //             var temp = t.total_time.split(':');
-        //             if (parseInt(temp[0], 10) >= 10) {
-        //                 _this.today.timeCompleted = 100.00;
-        //                 _this.d = describeArc(100, 70, 65, 240, (_this.today.timeCompleted * 2.4) + 240);
-        //             } else {
-        //                 var hrs = parseInt(temp[0], 10);
-        //                 var mins = parseInt(temp[1], 10);
-        //                 var minInPercentage = (mins / 60);
-        //                 var hrsInPercentage = (hrs / 10) * 100;
-        //                 _this.today.timeCompleted = (hrsInPercentage + (10 * (minInPercentage))).toFixed(2);
-        //                 //console.log(_this.today.timeCompleted);
-        //                 _this.d = describeArc(100, 70, 65, 240, (_this.today.timeCompleted * 2.4) + 240);
-        //             }
-        //         }
-        //     } else {
-        //         _this.today = {
-        //             date: new Date(),
-        //             timeCovered: {
-        //                 hrs: 0,
-        //                 mins: 0
-        //             },
-        //             start_time: 0,
-        //             end_time: 0,
-        //         };
-        //     }
-            //$route.reload();
-            //$scope.$apply(function(){});
       
     }
   }
 }
+
+// function checkStateChange(){
+//   var robot = require("robotjs");
+  
+//   console.log('inside checkStateChange');
+//   if(robot.keyTap()){
+//     console.log("key pressed");
+//   }
+// }

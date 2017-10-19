@@ -4,6 +4,8 @@ const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
+let $ = require('jquery') 
+
 const path = require('path')
 const url = require('url')
 
@@ -13,7 +15,8 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 400, height: 600})
+  mainWindow = new BrowserWindow({width: 400, height: 600,
+      icon : path.join(__dirname, 'assets/icons/png/64x64.png')})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -22,7 +25,7 @@ function createWindow () {
     slashes: true
 
   }))
-
+ mainWindow.webContents.openDevTools();
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 

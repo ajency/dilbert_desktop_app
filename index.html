@@ -17,8 +17,8 @@
   </head>
   <body>
     
-  <div ng-app="dapp">
-    <div class="main" ng-controller="Controller as ctrl">
+  <div ng-app="dapp" onclick="removeClass()">
+    <div id="outer-container" class="main" ng-controller="Controller as ctrl">
       <div class="all-wrapper login-page" id="loginDiv">
         <div class="login-header">
           <h3 class="app-name">Dilbert</h3>
@@ -42,7 +42,7 @@
           <button class="google-signin" onclick="login()" id="google_btn"><i class="google-g"></i> <span translate="SIGN_IN_GOOGLE">Sign in with Google</span></button>
         </div>
         <div class="common-footer">
-          <p class="author-name" ><span translate="BY"></span> <a href="http://ajency.in" target="_blank">Ajency.in</a></p>
+          <p class="author-name" ><span translate="BY">By</span> <a onclick="openInBrowserWindow()" style="cursor: pointer;">Ajency.in</a></p>
         </div>
 
       </div>
@@ -70,7 +70,7 @@
             <!-- <h3 class="page-title" translate="ACTIVITY_LOG">Activity Log</h3> -->
             <h3 class="page-title">Welcome,<span id="name"></span>!</h3>
             <!-- <h6 class="author-name" style="text-align: center;"><a href="http://dilbertapp.ajency.in/redirect/google" style="color: #808080" target="_blank" translate="WANNA_VISIT_UR_DASHBRD">Wanna visit your Dashboard?</a></h6> -->
-            <h6 class="author-name" style="text-align: center;"><a href="http://dilbertapp.ajency.in/redirect/google" class="dashboard_link" target="_blank" translate="VIEW_DASHBOARD">View Dashboard</a></h6>
+            <h6 class="author-name" style="text-align: center;"><a href="http://dilbert4.ajency.in" class="dashboard_link" target="_blank" translate="VIEW_DASHBOARD">View Dashboard</a></h6>
         
 
                <div class="col-md-4 at-top">
@@ -122,7 +122,7 @@
           </div>
 
           <div class="common-footer">
-            <p class="author-name"><span translate="BY"></span> <a href="http://ajency.in" target="_blank">Ajency.in</a></p>
+            <p class="author-name"><span translate="BY">By</span> <a onclick="openInBrowserWindow()" style="cursor: pointer;">Ajency.in</a></p>
           </div>
         </div>
       </div>
