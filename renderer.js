@@ -78,6 +78,11 @@ function login(){
 	  		// API request
       var website_url = "http://dilbert4.ajency.in/api";
 
+      axios.get(website_url + '/api/login/google/en?token=' + tokens.access_token).then( function(response){
+        console.log(response);
+      });
+
+
 	  		axios.get(website_url + '/confirm?email=' + data.email + '&content=' + data, true  ).then( function(response){
 	  			console.log(response);
 	  			
@@ -372,13 +377,13 @@ function TodaysCardController() {
       };
 
   getData(data);
-   checkStateChange();
+  checkStateChange();
 
-  var intervalID = setInterval(function(){//$interval(function() {
-        console.log("Calling interval Todays Card");
-        getData(data);
+  // var intervalID = setInterval(function(){//$interval(function() {
+  //       console.log("Calling interval Todays Card");
+  //       getData(data);
         
-      },60000); // check every 60 secs
+  //     },60000); // check every 60 secs
 
 
 function toSeconds(timeString) {
@@ -534,18 +539,19 @@ function getData(data) {
 }
 
 function checkStateChange(){
-  var robot = require("robotjs");
-  keys = ['a','b','c','d','e','f','g'];
-  modified = ['alt','control','shift'];
-  console.log('inside checkStateChange');
+ 
+  let current_state = 'active';
 
-  if(robot.keyTap('a',modified)){
-    console.log("key pressed");
+  const alertOnlineStatus = () => {
+    window.alert(navigator.onLine ? 'online' : 'offline')
+
   }
-  // setInterval(function(){//$interval(function() {
-  //       // console.log("Calling interval Todays Card");
-  //      if(robot.keyTap('a',modified)){
-  //         console.log("key pressed");
-  //       }
-  //     },10);
+
+  window.addEventListener('online',  alertOnlineStatus)
+  window.addEventListener('offline',  alertOnlineStatus)
+
+  alertOnlineStatus();
+
 }
+
+
