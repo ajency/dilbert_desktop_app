@@ -5,8 +5,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build:all": "electron-builder -mwl",
+    "build:mac": "electron-builder --mac",
     "pack": "electron-builder --dir",
-    "rebuild": "electron-rebuild --version 1.7.8 -f -w robotjs.node"
+    "rebuild:electron": "npm rebuild --runtime=electron --target=1.4.0 --disturl=https://atom.io/download/atom-shell --abi=50"
   },
   "repository": "https://github.com",
   "keywords": [
@@ -22,9 +24,9 @@
     "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
+    "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
     "jquery": "^3.2.1",
     "moment": "^2.19.1",
-    "qs-parser": "^0.4.8",
-    "robotjs": "^0.4.7"
+    "qs-parser": "^0.4.8"
   }
 }

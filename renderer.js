@@ -11,8 +11,6 @@ const { parse } = require('url')
 var moment = require('moment')
 var website_url = "http://dilbert4.ajency.in/api"
 
-var robot = require("robotjs");
-
 let $ = require('jquery') 
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'
@@ -20,6 +18,9 @@ const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'
 const GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8101'
 const GOOGLE_CLIENT_ID = '76840133643-uka7d6nglcm3rkdfdimklkr7jtgvtk64.apps.googleusercontent.com'
 const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
+
+const SYSTEM_IDLE = require('@paulcbetts/system-idle-time');
+const IDLE_THRESHOLD = 60000; // 1 minute
 
 var user_data
 var org_data;
@@ -372,7 +373,7 @@ function TodaysCardController() {
       };
 
   getData(data);
-   checkStateChange();
+  checkStateChange();
 
   var intervalID = setInterval(function(){//$interval(function() {
         console.log("Calling interval Todays Card");
@@ -534,18 +535,15 @@ function getData(data) {
 }
 
 function checkStateChange(){
-  var robot = require("robotjs");
-  keys = ['a','b','c','d','e','f','g'];
-  modified = ['alt','control','shift'];
-  console.log('inside checkStateChange');
+  console.log("........................ running robot ...................................");
 
-  if(robot.keyTap('a',modified)){
-    console.log("key pressed");
-  }
-  // setInterval(function(){//$interval(function() {
-  //       // console.log("Calling interval Todays Card");
-  //      if(robot.keyTap('a',modified)){
-  //         console.log("key pressed");
-  //       }
-  //     },10);
+  setInterval(function () {
+    var idletime = SYSTEM_IDLE.getIdleTime();
+    console.log("idle time: ", idletime);
+    if(idletime >= IDLE_THRESHOLD){
+      // make api call to indicate idle time
+      console.log("user idle for more than " + idletime + " ms. Trip the alarm!");
+    }
+  }, IDLE_THRESHOLD);
+
 }
