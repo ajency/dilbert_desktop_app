@@ -11,7 +11,7 @@ const { parse } = require('url')
 var moment = require('moment')
 var website_url = "http://dilbert4.ajency.in/api"
 
-// var robot = require("robotjs");
+var robot = require("robotjs");
 
 let $ = require('jquery') 
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -88,7 +88,7 @@ function login(){
 
 	  				axios.get( org_url , {
 	  				 headers:  {'X-API-KEY' : response.data[0].api_token},
-	  				},
+	  				}
 
 	  				).then( function(response){
 						if(response.data[0].name != undefined)
@@ -372,7 +372,7 @@ function TodaysCardController() {
       };
 
   getData(data);
-  // checkStateChange();
+   checkStateChange();
 
   var intervalID = setInterval(function(){//$interval(function() {
         console.log("Calling interval Todays Card");
@@ -474,7 +474,7 @@ function getData(data) {
 
             axios.get( card_data_url, {
              headers:  {'X-API-KEY' : data.api_token},
-            },
+            }
 
             ).then( function(response){
 
@@ -533,11 +533,19 @@ function getData(data) {
   }
 }
 
-// function checkStateChange(){
-//   var robot = require("robotjs");
-  
-//   console.log('inside checkStateChange');
-//   if(robot.keyTap()){
-//     console.log("key pressed");
-//   }
-// }
+function checkStateChange(){
+  var robot = require("robotjs");
+  keys = ['a','b','c','d','e','f','g'];
+  modified = ['alt','control','shift'];
+  console.log('inside checkStateChange');
+
+  if(robot.keyTap('a',modified)){
+    console.log("key pressed");
+  }
+  // setInterval(function(){//$interval(function() {
+  //       // console.log("Calling interval Todays Card");
+  //      if(robot.keyTap('a',modified)){
+  //         console.log("key pressed");
+  //       }
+  //     },10);
+}
