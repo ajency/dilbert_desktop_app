@@ -11,8 +11,6 @@ const { parse } = require('url')
 var moment = require('moment')
 var website_url = "http://dilbert4.ajency.in/api"
 
-var robot = require("robotjs");
-
 let $ = require('jquery') 
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'
@@ -21,9 +19,14 @@ const GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8101'
 const GOOGLE_CLIENT_ID = '76840133643-uka7d6nglcm3rkdfdimklkr7jtgvtk64.apps.googleusercontent.com'
 const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
 
+const SYSTEM_IDLE = require('@paulcbetts/system-idle-time');
+const IDLE_THRESHOLD = 60000; // 1 minute
+
 var user_data
 var org_data;
-
+var new_user_data;
+var from_state = 'active' , to_state, current_state = 'active', prev_state ='active';
+var logged_in = false;
 
 function openInBrowserWindow(){
   console.log('inside openInBrowserWindow');
@@ -80,42 +83,62 @@ function login(){
 
       axios.get(website_url + '/api/login/google/en?token=' + tokens.access_token).then( function(response){
         console.log(response);
+        if(response.data.status == 200){
+          new_user_data = response.data;
+
+            idleState(new_user_data.data.idle_time);
+           // checkStateChange();
+
+          $('#loading').css('display','none');// Hide the Loading GIF
+          $('#loginDiv').css('display','none');
+          $('#contentMem').css('display','block');
+          document.getElementById("name").innerHTML = new_user_data.data.name;
+
+          var NowMoment = moment();
+          var eDisplayMoment = document.getElementById('today');
+          eDisplayMoment.innerHTML = NowMoment.format('Do MMMM');
+
+          let d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
+          document.getElementById("d2").setAttribute("d", d2); 
+
+        }
+
       });
 
 
-	  		axios.get(website_url + '/confirm?email=' + data.email + '&content=' + data, true  ).then( function(response){
-	  			console.log(response);
+	  		// axios.get(website_url + '/confirm?email=' + data.email + '&content=' + data, true  ).then( function(response){
+	  		// 	console.log(response);
 	  			
-	  			if(response.data && response.data[0].org_id){
-	  				user_data =response.data[0];
-            document.getElementById("name").innerHTML = user_data.name
-	  				let org_url = website_url + '/org/info?org_id=' + response.data[0].org_id + '&user_id=' + response.data[0].id;
+	  		// 	if(response.data && response.data[0].org_id){
+	  		// 		user_data =response.data[0];
+     //        document.getElementById("name").innerHTML = user_data.name
+	  		// 		let org_url = website_url + '/org/info?org_id=' + response.data[0].org_id + '&user_id=' + response.data[0].id;
 
-	  				axios.get( org_url , {
-	  				 headers:  {'X-API-KEY' : response.data[0].api_token},
-	  				}
+	  		// 		axios.get( org_url , {
+	  		// 		 headers:  {'X-API-KEY' : response.data[0].api_token},
+	  		// 		}
 
-	  				).then( function(response){
-						if(response.data[0].name != undefined)
-							org_data = response.data[0];
-		  					console.log(response);
+	  		// 		).then( function(response){
+					// 	if(response.data[0].name != undefined)
+					// 		org_data = response.data[0];
+		  	// 				console.log(response);
 
-	  					// Create a session 
+	  		// 			// Create a session 
 
 
-	  					// Call idle_state function
+	  		// 			// Call idle_state function
 
-	  					idleState(org_data.idle_time);
+	  		// 			idleState(org_data.idle_time);
 
             
-              // $location.path('/todayscard');
+     //          // $location.path('/todayscard');
 
-	  				})
+	  		// 		})
 
 
-	  			}
+	  		// 	}
 				
-	  		})
+	  		// })
 
 	  	})
 
@@ -254,21 +277,27 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
 
   if(idleInterval_C > -1){
   			
-  			var data = {'user_id': user_data.id, 'from_state': '-', 'to_state': 'New Session', 'cos': get_Time(0), 'ip_addr': org_data.ip, 'api_token':user_data.api_token, 'data_from':'chrome App', 'socket_id':''};
 
-          $.ajax({
-            url: website_url + '/api/fire', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
+    // New Calls
+    console.log("Calling Idle State");
+
+    var data = {'from_state': '-', 'to_state': 'New Session'};
+     $.ajax({
+            url: website_url + '/api/ping', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
             crossDomain : true,
             type: 'GET',
             timeout: 15000,
             headers: {
               //'User-Agent': 'request'
-              'X-API-KEY': user_data.api_token
+              'X-API-KEY': new_user_data.data.x_api_key,
+              'from' : new_user_data.data.user_id
             },
             data: data
-            ,success: function(dataS) {
-              console.log(dataS);
-              TodaysCardController();
+            ,success: function(response) {
+              logged_in = true;
+              console.log(response);
+              TodaysCardController(response);
+              checkStateChange();
 
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
@@ -280,14 +309,6 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
               }
             }
           });
-
-
-
-    
-    console.log("Calling Idle State");
-    //chrome.idle.setDetectionInterval(idleInterval_C * 60);
-
-    console.log(idleInterval_C);
   } 
 
 
@@ -295,20 +316,24 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
   else { /* User logged out */
     console.log("User logged out");
 
-  		var data = {'user_id': user_data.id, 'from_state': 'active', 'to_state': 'offline', 'cos': get_Time(0), 'ip_addr': org_data.ip, 'data_from':'chrome App', 'socket_id':''};
+        // New calls
 
+         var data = {'from_state': prev_state, 'to_state': 'offline'};
+         console.log("from_state = " + data.from_state + " and to_state = " + data.to_state);
         $.ajax({
-          url: website_url + '/api/fire', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
+          url: website_url + '/api/ping', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
           crossDomain : true,
           type: 'GET',
           timeout: 15000,
           headers: {
-            //'User-Agent': 'request'
-            'X-API-KEY': user_data.api_token
+              //'User-Agent': 'request'
+              'X-API-KEY': new_user_data.data.x_api_key,
+              'from' : new_user_data.data.user_id
           },
           data: data
           ,success: function(dataS) {
             console.log(dataS);
+            logged_in = false;
           }, error: function(XMLHttpRequest, textStatus, errorThrown) {
             if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
               console.log("state 4");
@@ -359,45 +384,38 @@ function get_Time(sumUp) { // for active, sumUp = 0, else sumUp = timeInterval
 }
 
    
-function TodaysCardController() {
-  console.log("Calling Controller ");
-  let d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
-  document.getElementById("d2").setAttribute("d", d2); 
+function TodaysCardController(data) {
+  
+    console.log("Calling Controller --", data);
 
-  var todaysDate = formatDate(new Date());
-    
-  var date = {
-        start_date: todaysDate,
-        end_date: todaysDate,
-      };
-  var data = {
-        "user_id": user_data.id,
-        "api_token": user_data.api_token,
-        "date": date
-      };
+    document.getElementById("hr").innerHTML = data.total_time.split(':')[0];
+    document.getElementById("min").innerHTML = data.total_time.split(':')[1];
+    document.getElementById("start_time").innerHTML = moment(data.start_time.split(' ')[1], "kk:mm:ss").format("hh:mm A");
+    document.getElementById("end_time").innerHTML = moment(data.end_time.split(' ')[1], "kk:mm:ss").format("hh:mm A");
+      
+      if (data.total_time || data.total_time !== '') {
+          var temp = data.total_time.split(':');
+          if (parseInt(temp[0], 10) >= 10) {
+              var time_completed = 100.00;
+              var d = describeArc(100, 70, 65, 240, (time_completed * 2.4) + 240);
+              document.getElementById("d1").setAttribute("d", d); 
 
-  getData(data);
-  checkStateChange();
+          } else {
+              var hrs = parseInt(temp[0], 10);
+              var mins = parseInt(temp[1], 10);
+              var minInPercentage = (mins / 60);
+              var hrsInPercentage = (hrs / 10) * 100;
+              var time_completed = (hrsInPercentage + (10 * (minInPercentage))).toFixed(2);
+              //console.log(_this.today.timeCompleted);
+              var d = describeArc(100, 70, 65, 240, (time_completed * 2.4) + 240);
+              document.getElementById("d1").setAttribute("d", d); 
 
-  // var intervalID = setInterval(function(){//$interval(function() {
-  //       console.log("Calling interval Todays Card");
-  //       getData(data);
-        
-  //     },60000); // check every 60 secs
+          }
+        }  
 
 
-function toSeconds(timeString) {
-      var p = timeString.split(':');
-      return (parseInt(p[0], 10) * 3600) + (parseInt(p[1], 10) * 60);
-  }
+}
 
-function fill(s, digits) {
-      s = s.toString();
-      while (s.length < digits) {
-          s = '0' + s;
-      };
-      return s;
-  }
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
       var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -418,140 +436,81 @@ function describeArc(x, y, radius, startAngle, endAngle) {
       return d;
   }
 
-function timeConversion(milliseconds) {
-      // Get hours from milliseconds
-      var hours = milliseconds / (1000 * 60 * 60);
-      var absoluteHours = Math.floor(hours);
-      var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
-      // Get remainder from hours and convert to minutes
-      var minutes = (hours - absoluteHours) * 60;
-      var absoluteMinutes = Math.floor(minutes);
-      var m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
-      return h + ':' + m;
-  }
-
-function formatDate(date) {
-      var temp = new Date(date);
-
-      return temp.getFullYear() + '-' + (temp.getMonth() + 1 < 10 ? '0' + (temp.getMonth() + 1) : temp.getMonth() + 1) + '-' + (temp.getDate() < 10 ? '0' + (temp.getDate()) : (temp.getDate()));
-}
-
-function getWeek(date) {
-      var temp = new Date(date);
-      var onejan = new Date(temp.getFullYear(), 0, 1);
-      var temp2 = temp.getTime() - onejan.getTime();
-      return Math.ceil((((temp2) / 86400000) + onejan.getDay() + 1) / 7);
-  }
-
-function getStartAndEndOfDate(date, isMonth) {
-      if (isMonth) {
-          var temp = new Date(date), y = temp.getFullYear(), m = temp.getMonth();
-          var firstDay = new Date(y, m, 1);
-          var lastDay = new Date(y, m + 1, 0);
-          return {
-              start: firstDay,
-              end: lastDay
-          };
-      }
-      else {
-          var curr = new Date(date);
-          var firstDay = new Date(curr.setDate(curr.getDate() - curr.getDay() + 1));
-          var lastDay = new Date(curr.setDate(curr.getDate() - curr.getDay() + 7));
-          return {
-              start: firstDay,
-              end: lastDay
-          };
-      }
-  }
-
-
-
-function getData(data) {
-    //var _this = this;
-    var website_url = "http://dilbert4.ajency.in/api";
-    let $ = require('jquery') ;
-    var moment = require('moment')
-
-
-    if(data){
-
-           let card_data_url = website_url + '/api/data/user?user_id='+ data.user_id + '&start_date=' + data.date.start_date + '&end_date='+ data.date.end_date;
-
-            axios.get( card_data_url, {
-             headers:  {'X-API-KEY' : data.api_token},
-            }
-
-            ).then( function(response){
-
-              console.log(response);
-              $('#loading').css('display','none');// Hide the Loading GIF
-              $('#loginDiv').css('display','none');
-              $('#contentMem').css('display','block');
-
-            var t = response;
-            if (response.length !== 0 && response.data.length !== 0 && response.data[0].data.length !== 0) {
-                t = response.data[0].data[0];
-                //console.log(t.start_time);
-
-              var NowMoment = moment();
-              var eDisplayMoment = document.getElementById('today');
-              eDisplayMoment.innerHTML = NowMoment.format('Do MMMM');
-
-              document.getElementById("hr").innerHTML = t.total_time.split(':')[0];
-              document.getElementById("min").innerHTML = t.total_time.split(':')[1];
-              document.getElementById("start_time").innerHTML = moment(t.start_time.split(' ')[1], "kk:mm:ss").format("hh:mm A");
-              document.getElementById("end_time").innerHTML = moment(t.end_time.split(' ')[1], "kk:mm:ss").format("hh:mm A");
-                
-                if (t.total_time || t.total_time !== '') {
-                    var temp = t.total_time.split(':');
-                    if (parseInt(temp[0], 10) >= 10) {
-                        var time_completed = 100.00;
-                        var d = describeArc(100, 70, 65, 240, (time_completed * 2.4) + 240);
-                        document.getElementById("d1").setAttribute("d", d); 
-
-                    } else {
-                        var hrs = parseInt(temp[0], 10);
-                        var mins = parseInt(temp[1], 10);
-                        var minInPercentage = (mins / 60);
-                        var hrsInPercentage = (hrs / 10) * 100;
-                        var time_completed = (hrsInPercentage + (10 * (minInPercentage))).toFixed(2);
-                        //console.log(_this.today.timeCompleted);
-                        var d = describeArc(100, 70, 65, 240, (time_completed * 2.4) + 240);
-                        document.getElementById("d1").setAttribute("d", d); 
-
-                    }
-                }
-            } else {
-
-              var NowMoment = moment();
-              var eDisplayMoment = document.getElementById('today');
-              eDisplayMoment.innerHTML = NowMoment.format('Do MMMM');
-
-               
-            }
-
-
-
-            })
-      
-    }
-  }
-}
 
 function checkStateChange(){
- 
-  let current_state = 'active';
 
-  const alertOnlineStatus = () => {
-    window.alert(navigator.onLine ? 'online' : 'offline')
+  let ping_freq = new_user_data.data.ping_freq * 60000;
+  console.log(ping_freq);
+  console.log(new_user_data);
+  from_state = 'active';
+  to_state = 'active';
+  current_state = 'active';
+  prev_state = 'active';
+  console.log("........................ Status checking ...................................");
+  console.log("logged_in status -- ",logged_in);
 
-  }
+  setInterval(function () {
+    if(logged_in){
+      var idletime = SYSTEM_IDLE.getIdleTime();
+      // console.log("idle time: ", idletime/1000);
 
-  window.addEventListener('online',  alertOnlineStatus)
-  window.addEventListener('offline',  alertOnlineStatus)
+      if(idletime >= 30000  && prev_state == 'active'){
+        // make api call to indicate idle time
+        // console.log("state change ------active to idle");
+        from_state = 'active';
+        to_state = 'idle';
 
-  alertOnlineStatus();
+        current_state = 'idle';
+      }
+
+      if(idletime < 30000 && prev_state == 'idle'){
+        // console.log("state change ------idle to active");
+        from_state = 'idle';
+        to_state = 'active'; 
+
+        current_state = 'active';
+      }
+    }
+  }, 1000);
+
+
+  setInterval(function(){
+    if(logged_in){
+
+    console.log("Pinging server after 3 minutes", logged_in);
+    from_state = prev_state;
+
+    console.log("from_state = " + from_state + "  and to_state = " + current_state);
+
+    prev_state = current_state;
+
+     var data = {'from_state': from_state, 'to_state': to_state};
+     $.ajax({
+            url: website_url + '/api/ping', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
+            crossDomain : true,
+            type: 'GET',
+            timeout: 15000,
+            headers: {
+              //'User-Agent': 'request'
+              'X-API-KEY': new_user_data.data.x_api_key,
+              'from' : new_user_data.data.user_id
+            },
+            data: data
+            ,success: function(response) {
+              // console.log(response);
+              TodaysCardController(response);
+
+            }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+              if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
+                console.log("state 4");
+              } else if (XMLHttpRequest.readyState == 0) { // Network error (i.e. connection refused, access denied due to CORS, etc.)
+                console.log("Offline");
+              } else { // something weird is happening
+                console.log("state weird");
+              }
+            }
+          });
+      }
+  },20000);
 
 }
-
-
