@@ -387,6 +387,17 @@ function get_Time(sumUp) { // for active, sumUp = 0, else sumUp = timeInterval
 function TodaysCardController(data) {
   
     console.log("Calling Controller --", data);
+    if(data.total_time == '-' && data.start_time == '-' && data.end_time == '-'){
+
+    document.getElementById("hr").innerHTML = '00';
+    document.getElementById("min").innerHTML = '00';
+    document.getElementById("start_time").innerHTML = '-';
+    document.getElementById("end_time").innerHTML = '-';
+
+    }
+
+    else{
+
 
     document.getElementById("hr").innerHTML = data.total_time.split(':')[0];
     document.getElementById("min").innerHTML = data.total_time.split(':')[1];
@@ -413,7 +424,7 @@ function TodaysCardController(data) {
           }
         }  
 
-
+    }
 }
 
 
@@ -439,8 +450,28 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 
 function checkStateChange(){
 
+  var online;
+  const alertOnlineStatus = () => {
+    // window.alert(navigator.onLine ? 'online' : 'offline')
+    console.log(navigator.onLine ? 'online' : 'offline');
+    if(navigator.onLine){
+      online = true;
+      console.log(online);
+    }
+    else{
+      online = false;
+      console.log(online);
+    }
+  }
+
+  window.addEventListener('online',  alertOnlineStatus)
+  window.addEventListener('offline',  alertOnlineStatus)
+
+  alertOnlineStatus();
+
   let ping_freq = new_user_data.data.ping_freq * 60000;
-  console.log(ping_freq);
+  let idle_time = new_user_data.data.idle_time * 60000;
+  console.log(ping_freq , idle_time);
   console.log(new_user_data);
   from_state = 'active';
   to_state = 'active';
@@ -450,11 +481,11 @@ function checkStateChange(){
   console.log("logged_in status -- ",logged_in);
 
   setInterval(function () {
-    if(logged_in){
+    if(logged_in && online){
       var idletime = SYSTEM_IDLE.getIdleTime();
       // console.log("idle time: ", idletime/1000);
 
-      if(idletime >= 30000  && prev_state == 'active'){
+      if(idletime >= idle_time  && prev_state == 'active'){
         // make api call to indicate idle time
         // console.log("state change ------active to idle");
         from_state = 'active';
@@ -463,7 +494,7 @@ function checkStateChange(){
         current_state = 'idle';
       }
 
-      if(idletime < 30000 && prev_state == 'idle'){
+      if(idletime < idle_time && prev_state == 'idle'){
         // console.log("state change ------idle to active");
         from_state = 'idle';
         to_state = 'active'; 
@@ -475,7 +506,7 @@ function checkStateChange(){
 
 
   setInterval(function(){
-    if(logged_in){
+    if(logged_in && online){
 
     console.log("Pinging server after 3 minutes", logged_in);
     from_state = prev_state;
@@ -511,6 +542,6 @@ function checkStateChange(){
             }
           });
       }
-  },20000);
+  },ping_freq);
 
 }
