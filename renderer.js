@@ -140,12 +140,18 @@ function login(){
           else if(response.data.next_url == "/join_organisation"){
             // Handle condition for join organisation
             showNotification("join organisation");
+            shell.openExternal('http://dilbert4.ajency.in/joinorganisation');
 
           }
 
           else if (response.data.next_url == "/create_organisation"){
             // Handle condtion for create organisation
             showNotification("create organisation");
+            shell.openExternal('http://dilbert4.ajency.in/createorganisation');
+
+          }
+          else{
+            showNotification("connection error");
           }
           
            // checkStateChange();
@@ -666,7 +672,7 @@ function showNotification(type){
   if(type == 'join organisation'){
     let myNotification = new Notification('Dilbert',{
     title : 'Dilbert',
-    body: 'Hey, please join organisation.',
+    body: 'Hey, please join organisation and login again',
     icon : 'assets/icons/png/48x48.png',
     hasReply : true
   })
@@ -678,7 +684,18 @@ function showNotification(type){
 
   if(type == 'create organisation'){
     let myNotification = new Notification('Dilbert', {
-    body: 'Hey, please create a new organisation.',
+    body: 'Hey, please create a new organisation and login again',
+    icon : 'assets/icons/png/48x48.png',
+  })
+
+    myNotification.onclick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+   if(type == 'connection error'){
+    let myNotification = new Notification('Dilbert', {
+    body: 'Connection error... please try logging in again',
     icon : 'assets/icons/png/48x48.png',
   })
 
