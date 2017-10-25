@@ -4,6 +4,8 @@ const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
+const ipcMain = electron.ipcMain
+
 let $ = require('jquery') 
 
 const path = require('path')
@@ -11,14 +13,14 @@ const url = require('url')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow = null;
 
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 400, height: 600, 
-                                 resizable: false,
-                                 fullscreen: false,
-      icon : path.join(__dirname, 'assets/icons/png')})
+                                 // resizable: false,
+                                 // fullscreen: false,
+      icon : path.join(__dirname, 'assets/icons/png/icon.png')})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -36,6 +38,9 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
+   
+    // mainWindow.webContents.send('ping', 5);
+    console.log("main window closed");
     mainWindow = null
   })
 }
@@ -48,6 +53,7 @@ app.on('ready', createWindow)
 app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
+  console.log("all windows closed")
   if (process.platform !== 'darwin') {
     app.quit()
   }

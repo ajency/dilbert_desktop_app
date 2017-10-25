@@ -3,6 +3,10 @@
 // All of the Node.js APIs are available in this process.
 const electron = require('electron')
 const {BrowserWindow} = require('electron').remote
+const app = electron.app
+
+const {shell} = require('electron')
+
 
 const { remote } = require('electron')
 const url = require('url')
@@ -10,6 +14,10 @@ const { parse } = require('url')
 // var axios = require('axios')
 var moment = require('moment')
 var website_url = "http://dilbert4.ajency.in/api"
+
+
+var { ipcRenderer } = require('electron');  
+var main = remote.require("./main.js");
 
 let $ = require('jquery') 
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -32,9 +40,33 @@ function openInBrowserWindow(){
   console.log('inside openInBrowserWindow');
   // $('#loading').css('display','block');
 
-  let win = new BrowserWindow({width: 800, height: 600})
-  win.loadURL('https://github.com');
+  shell.openExternal('https://ajency.in')
 }
+
+function openDashboard(){
+  console.log("opening dashboard")
+  shell.openExternal('http://dilbert4.ajency.in')
+
+}
+
+// ipcRenderer.on('ping' , (event,arg) =>{
+//   console.log(arg);
+//   idleState(-1);
+// })
+
+// Ping on app close
+// app.on('window-all-closed', function () {
+//   // On OS X it is common for applications and their menu bar
+//   // to stay active until the user quits explicitly with Cmd + Q
+
+//   idleState(-1);
+//   console.log("all windows closed");
+//   if (process.platform !== 'darwin') {
+//     app.quit()
+//   }
+// })
+
+
 
 function addClass(){
   let $ = require('jquery') ;
@@ -84,15 +116,28 @@ function login(){
       axios.get(website_url + '/api/login/google/en?token=' + tokens.access_token).then( function(response){
         console.log(response);
         if(response.data.status == 200){
-          new_user_data = response.data;
 
+          if(response.data.next_url == '/dashboard'){
+            new_user_data = response.data;
             idleState(new_user_data.data.idle_time);
+            document.getElementById("name").innerHTML = new_user_data.data.name;
+
+          }
+          else if(response.data.next_url == "/join_organisation"){
+            // Handle condition for join organisation
+
+          }
+
+          else if (response.data.next_url == "/create_organisation"){
+            // Handle condtion for create organisation
+          }
+          
            // checkStateChange();
 
           $('#loading').css('display','none');// Hide the Loading GIF
           $('#loginDiv').css('display','none');
           $('#contentMem').css('display','block');
-          document.getElementById("name").innerHTML = new_user_data.data.name;
+          
 
           var NowMoment = moment();
           var eDisplayMoment = document.getElementById('today');
@@ -282,6 +327,7 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
     console.log("Calling Idle State");
 
     var data = {'from_state': '-', 'to_state': 'New Session'};
+    // data = decodeURI(data);
      $.ajax({
             url: website_url + '/api/ping', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
             crossDomain : true,
@@ -298,6 +344,7 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
               console.log(response);
               TodaysCardController(response);
               checkStateChange();
+              // clientSideUpdateTime(response);
 
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
@@ -426,6 +473,34 @@ function TodaysCardController(data) {
 
     }
 }
+
+// function clientSideUpdateTime(data){
+//   console.log("clientSideUpdateTime --", data);
+//     if(data.total_time == '-' && data.start_time == '-' && data.end_time == '-'){
+
+//     // document.getElementById("hr").innerHTML = '00';
+//     // document.getElementById("min").innerHTML = '00';
+//     // document.getElementById("start_time").innerHTML = '-';
+//     // document.getElementById("end_time").innerHTML = '-';
+
+//     }
+
+//     else{
+
+//     setInterval( (function){
+//       if(difference between end_time and current time is < 3 minutes){
+//         // Update the end_time and total_time
+
+//       }
+
+//       else{
+//         // set end time and total time to the response 
+//       }
+
+//     },30000)
+
+//     }
+// }
 
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
