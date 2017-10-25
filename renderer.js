@@ -121,18 +121,7 @@ function login(){
             new_user_data = response.data;
             idleState(new_user_data.data.idle_time);
             document.getElementById("name").innerHTML = new_user_data.data.name;
-
-          }
-          else if(response.data.next_url == "/join_organisation"){
-            // Handle condition for join organisation
-
-          }
-
-          else if (response.data.next_url == "/create_organisation"){
-            // Handle condtion for create organisation
-          }
-          
-           // checkStateChange();
+            showNotification('login');
 
           $('#loading').css('display','none');// Hide the Loading GIF
           $('#loginDiv').css('display','none');
@@ -146,6 +135,22 @@ function login(){
           let d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
           document.getElementById("d2").setAttribute("d", d2); 
 
+
+          }
+          else if(response.data.next_url == "/join_organisation"){
+            // Handle condition for join organisation
+            showNotification("join organisation");
+
+          }
+
+          else if (response.data.next_url == "/create_organisation"){
+            // Handle condtion for create organisation
+            showNotification("create organisation");
+          }
+          
+           // checkStateChange();
+
+         
         }
 
       });
@@ -531,10 +536,12 @@ function checkStateChange(){
     console.log(navigator.onLine ? 'online' : 'offline');
     if(navigator.onLine){
       online = true;
+      showNotification('online');
       console.log(online);
     }
     else{
       online = false;
+      showNotification('offline');
       console.log(online);
     }
   }
@@ -618,5 +625,66 @@ function checkStateChange(){
           });
       }
   },ping_freq);
+
+}
+
+function showNotification(type){
+  console.log("inside showNotification");
+
+  if(type == 'login'){
+  //   let myNotification = new Notification('Dilbert', {
+  //   body: ''
+  // })
+
+  //   myNotification.onclick = () => {
+  //   console.log('Notification clicked')
+  // }
+ }
+
+  if(type == 'online'){
+    let myNotification = new Notification('Psst...', {
+    body: 'Hey, you are connected to the Dilbert server.',
+    icon : 'assets/icons/png/48x48.png',
+  })
+
+    myNotification.onclick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+  if(type == 'offline'){
+    let myNotification = new Notification('Whoops...', {
+    body: 'Sorry, but it seems you are not connected to the server..',
+    icon : 'assets/icons/png/48x48.png',
+  })
+
+    myNotification.onclick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+  if(type == 'join organisation'){
+    let myNotification = new Notification('Dilbert',{
+    title : 'Dilbert',
+    body: 'Hey, please join organisation.',
+    icon : 'assets/icons/png/48x48.png',
+    hasReply : true
+  })
+
+    myNotification.onClick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+  if(type == 'create organisation'){
+    let myNotification = new Notification('Dilbert', {
+    body: 'Hey, please create a new organisation.',
+    icon : 'assets/icons/png/48x48.png',
+  })
+
+    myNotification.onclick = () => {
+    console.log('Notification clicked')
+  }
+ }
 
 }
