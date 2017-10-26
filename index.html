@@ -15,7 +15,7 @@
     <script src="renderer.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   </head>
-  <body>
+  <body onload = "checkCookies()">
     
   <div ng-app="dapp" onclick="removeClass()">
     <div id="outer-container" class="main" ng-controller="Controller as ctrl">

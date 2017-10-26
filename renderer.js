@@ -1,25 +1,27 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-const electron = require('electron')
-const {BrowserWindow} = require('electron').remote
-const app = electron.app
+const electron = require('electron');
+const {BrowserWindow} = require('electron').remote;
+const app = electron.app;
 
-const {shell} = require('electron')
+const {shell} = require('electron');
+const os = require('os');
+const storage = require('electron-json-storage');
 
 
-const { remote } = require('electron')
-const url = require('url')
-const { parse } = require('url')
+const { remote } = require('electron');
+const url = require('url');
+const { parse } = require('url');
 // var axios = require('axios')
-var moment = require('moment')
-var website_url = "http://dilbert4.ajency.in/api"
+var moment = require('moment');
+var website_url = "http://dilbert4.ajency.in/api";
 
 
 var { ipcRenderer } = require('electron');  
 var main = remote.require("./main.js");
 
-let $ = require('jquery') 
+let $ = require('jquery');
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'
 const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'
@@ -35,6 +37,8 @@ var org_data;
 var new_user_data;
 var from_state = 'active' , to_state, current_state = 'active', prev_state ='active';
 var logged_in = false;
+var sleep_flag = false;
+var last_ping_time;
 
 function openInBrowserWindow(){
   console.log('inside openInBrowserWindow');
@@ -51,7 +55,6 @@ function openDashboard(){
 
 // ipcRenderer.on('ping' , (event,arg) =>{
 //   console.log(arg);
-//   idleState(-1);
 // })
 
 // Ping on app close
@@ -66,6 +69,39 @@ function openDashboard(){
 //   }
 // })
 
+function checkCookies(){
+
+  console.log('inside checkCookies');
+   storage.get('user_data', function(error, data) {
+      if (error) {
+          throw error;
+          return;
+        }
+
+      console.log(data);
+      if(data.data){
+      new_user_data = data;
+       idleState(new_user_data.data.idle_time);
+       document.getElementById("name").innerHTML = new_user_data.data.name;
+       showNotification('login');
+
+      $('#loading').css('display','none');// Hide the Loading GIF
+      $('#loginDiv').css('display','none');
+      $('#contentMem').css('display','block');
+      
+
+      var NowMoment = moment();
+      var eDisplayMoment = document.getElementById('today');
+      eDisplayMoment.innerHTML = NowMoment.format('Do MMMM');
+
+      let d2 = describeArc(100, 70, 65, 240, 480); // describeArc(x, y, radius, startAngle, endAngle)
+      document.getElementById("d2").setAttribute("d", d2); 
+
+    }
+    });
+
+
+}
 
 
 function addClass(){
@@ -97,7 +133,8 @@ function logout() {
 function login(){
   let $ = require('jquery') ;
 
-
+  const dataPath = storage.getDataPath();
+  console.log(dataPath);
 
   console.log("inside login function");
    $('#loading').css('display','block');
@@ -119,6 +156,28 @@ function login(){
 
           if(response.data.next_url == '/dashboard'){
             new_user_data = response.data;
+
+            console.log('---------------------------------------------');
+            
+
+            storage.set('user_data', new_user_data , function(error) {
+              if (error) throw error;
+
+              console.log('data set');
+
+              storage.get('user_data', function(error, data) {
+              if (error) throw error;
+
+              console.log(data);
+            });
+
+            });
+
+            
+            
+
+            console.log('---------------------------------------------');
+
             idleState(new_user_data.data.idle_time);
             document.getElementById("name").innerHTML = new_user_data.data.name;
             showNotification('login');
@@ -352,6 +411,8 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
             data: data
             ,success: function(response) {
               logged_in = true;
+              last_ping_time = new Date().getTime();
+              console.log(last_ping_time);
               console.log(response);
               TodaysCardController(response);
               checkStateChange();
@@ -392,6 +453,14 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
           ,success: function(dataS) {
             console.log(dataS);
             logged_in = false;
+            // Remove data from storage on logout
+
+            storage.remove('user_data', function(error) {
+              if (error) throw error;
+              else{
+                console.log("storage cleared");
+              }
+            });
           }, error: function(XMLHttpRequest, textStatus, errorThrown) {
             if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
               console.log("state 4");
@@ -570,6 +639,8 @@ function checkStateChange(){
 
   setInterval(function () {
     if(logged_in && online){
+      sleep_flag = false;
+
       var idletime = SYSTEM_IDLE.getIdleTime();
       // console.log("idle time: ", idletime/1000);
 
@@ -590,20 +661,46 @@ function checkStateChange(){
         current_state = 'active';
       }
     }
+
+    // If the user is disconnected from internet for more than 10 minutes
+    // else if(logged_in && !online){
+    //   var sleeptime = SYSTEM_IDLE.getIdleTime();
+    //   if(sleeptime >= (idle_time * 2)){
+    //     sleep_flag = true;
+    //   }
+
+    // }
+
+
   }, 1000);
 
 
   setInterval(function(){
     if(logged_in && online){
+      
+      console.log("Pinging server after 3 minutes", logged_in);
+      let time_difference_btwn_two_ping = (new Date().getTime() - last_ping_time) / 60000;
+      console.log(time_difference_btwn_two_ping);
+      
 
-    console.log("Pinging server after 3 minutes", logged_in);
-    from_state = prev_state;
+      if(time_difference_btwn_two_ping > 10){
 
-    console.log("from_state = " + from_state + "  and to_state = " + current_state);
+         var data = {'from_state': '-', 'to_state': 'New Session'};
+         prev_state = 'active';
+         console.log("from_state = -  and to_state = New Session");
 
-    prev_state = current_state;
+      }
+      else{
 
-     var data = {'from_state': from_state, 'to_state': to_state};
+       from_state = prev_state;
+       var data = {'from_state': from_state, 'to_state': current_state};
+       prev_state = current_state;
+       console.log("from_state = " + from_state + "  and to_state = " + current_state);
+
+      }
+
+
+
      $.ajax({
             url: website_url + '/api/ping', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
             crossDomain : true,
@@ -618,6 +715,8 @@ function checkStateChange(){
             ,success: function(response) {
               // console.log(response);
               TodaysCardController(response);
+              last_ping_time = new Date().getTime();
+              console.log(last_ping_time);
 
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)

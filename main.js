@@ -11,6 +11,34 @@ let $ = require('jquery')
 const path = require('path')
 const url = require('url')
 
+
+
+// Code for autolauch on start up
+var AutoLaunch = require('auto-launch');
+
+var dilbertAutoLauncher = new AutoLaunch({
+  name: 'Dilbert-app',
+  path: '/Applications/Dilbert-app'
+});
+
+dilbertAutoLauncher.enable();
+
+//minecraftAutoLauncher.disable();
+
+
+dilbertAutoLauncher.isEnabled()
+.then(function(isEnabled){
+  if(isEnabled){
+      return;
+  }
+  dilbertAutoLauncher.enable();
+})
+.catch(function(err){
+    // handle error
+    console.log("auto lauch failed");
+});
+
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;

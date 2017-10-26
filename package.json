@@ -10,7 +10,7 @@
     "build:mac": "electron-builder --mac",
     "pack": "electron-builder --dir",
     "rebuild:electron": "npm rebuild --runtime=electron --target=1.4.0 --disturl=https://atom.io/download/atom-shell --abi=50",
-    "dist" : "build"
+    "dist": "build"
   },
   "repository": "https://github.com",
   "keywords": [
@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
+    "auto-launch": "^5.0.1",
+    "electron-json-storage": "^4.0.2",
     "jquery": "^3.2.1",
     "moment": "^2.19.1",
     "qs-parser": "^0.4.8"
