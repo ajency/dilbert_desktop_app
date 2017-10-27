@@ -17,8 +17,8 @@ const url = require('url')
 var AutoLaunch = require('auto-launch');
 
 var dilbertAutoLauncher = new AutoLaunch({
-  name: 'Dilbert-app',
-  path: '/Applications/Dilbert-app'
+  name: 'DilbertApp',
+  // path: '/Applications/Dilbert-app'
 });
 
 dilbertAutoLauncher.enable();
@@ -46,9 +46,9 @@ let mainWindow = null;
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 400, height: 600, 
-                                 // resizable: false,
-                                 // fullscreen: false,
-      icon : path.join(__dirname, 'assets/icons/png/icon.png')})
+                                  // resizable: false,
+                                  // fullscreen: false,
+      icon : path.join(__dirname, 'assets/icons/win/128x128.ico')})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -57,7 +57,7 @@ function createWindow () {
     slashes: true
 
   }))
- // mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -76,6 +76,13 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
+
+
+app.setLoginItemSettings({
+  openAtLogin: true,
+  openAsHidden : true
+})
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

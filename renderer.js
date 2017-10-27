@@ -71,6 +71,9 @@ function openDashboard(){
 
 function checkCookies(){
 
+  let dataPath = storage.getDataPath();
+  console.log(dataPath);
+  
   console.log('inside checkCookies');
    storage.get('user_data', function(error, data) {
       if (error) {
@@ -80,14 +83,14 @@ function checkCookies(){
 
       console.log(data);
       if(data.data){
-      new_user_data = data;
+       new_user_data = data;
        idleState(new_user_data.data.idle_time);
        document.getElementById("name").innerHTML = new_user_data.data.name;
        showNotification('login');
 
-      $('#loading').css('display','none');// Hide the Loading GIF
-      $('#loginDiv').css('display','none');
-      $('#contentMem').css('display','block');
+      // $('#loading').css('display','none');// Hide the Loading GIF
+      // $('#loginDiv').css('display','none');
+      // $('#contentMem').css('display','block');
       
 
       var NowMoment = moment();
@@ -133,7 +136,7 @@ function logout() {
 function login(){
   let $ = require('jquery') ;
 
-  const dataPath = storage.getDataPath();
+  let dataPath = storage.getDataPath();
   console.log(dataPath);
 
   console.log("inside login function");
@@ -165,11 +168,11 @@ function login(){
 
               console.log('data set');
 
-              storage.get('user_data', function(error, data) {
-              if (error) throw error;
+            //   storage.get('user_data', function(error, data) {
+            //   if (error) throw error;
 
-              console.log(data);
-            });
+            //   console.log(data);
+            // });
 
             });
 
@@ -182,9 +185,7 @@ function login(){
             document.getElementById("name").innerHTML = new_user_data.data.name;
             showNotification('login');
 
-          $('#loading').css('display','none');// Hide the Loading GIF
-          $('#loginDiv').css('display','none');
-          $('#contentMem').css('display','block');
+         
           
 
           var NowMoment = moment();
@@ -198,6 +199,8 @@ function login(){
           }
           else if(response.data.next_url == "/join_organisation"){
             // Handle condition for join organisation
+           $('#loading').css('display','none');
+
             showNotification("join organisation");
             shell.openExternal('http://dilbert4.ajency.in/joinorganisation');
 
@@ -205,11 +208,15 @@ function login(){
 
           else if (response.data.next_url == "/create_organisation"){
             // Handle condtion for create organisation
+           $('#loading').css('display','none');
+
             showNotification("create organisation");
             shell.openExternal('http://dilbert4.ajency.in/createorganisation');
 
           }
           else{
+           $('#loading').css('display','none');
+
             showNotification("connection error");
           }
           
@@ -217,6 +224,12 @@ function login(){
 
          
         }
+
+        else{
+           $('#loading').css('display','none');
+            
+            showNotification("connection error");
+          }
 
       });
 
@@ -410,14 +423,32 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
             },
             data: data
             ,success: function(response) {
-              logged_in = true;
-              last_ping_time = new Date().getTime();
-              console.log(last_ping_time);
-              console.log(response);
-              TodaysCardController(response);
-              checkStateChange();
-              // clientSideUpdateTime(response);
-
+              if(response.status == 401){
+                $('#loading').css('display','none');// Hide the Loading GIF
+                showNotification('session expired');
+              }
+              else if(response.status == 400){
+                $('#loading').css('display','none');// Hide the Loading GIF
+                showNotification('params missing');
+              }
+              else if(response.status == 403){
+                $('#loading').css('display','none');// Hide the Loading GIF
+                showNotification('authorization error');
+              }
+              else{
+                $('#loading').css('display','none');// Hide the Loading GIF
+                $('#loginDiv').css('display','none');
+                $('#contentMem').css('display','block');
+                
+                logged_in = true;
+                last_ping_time = new Date().getTime();
+                console.log(last_ping_time);
+                console.log(response);
+                TodaysCardController(response);
+                checkStateChange();
+                // clientSideUpdateTime(response);                
+              }
+              
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
                 console.log("state 4");
@@ -437,7 +468,7 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
 
         // New calls
 
-         var data = {'from_state': prev_state, 'to_state': 'offline'};
+         var data = {'from_state': prev_state, 'to_state': 'Offline'};
          console.log("from_state = " + data.from_state + " and to_state = " + data.to_state);
         $.ajax({
           url: website_url + '/api/ping', // url to confirm the user if present in company database & receive ID else create that user w.r.t that domain
@@ -683,7 +714,7 @@ function checkStateChange(){
       console.log(time_difference_btwn_two_ping);
       
 
-      if(time_difference_btwn_two_ping > 10){
+      if(time_difference_btwn_two_ping > idle_time){
 
          var data = {'from_state': '-', 'to_state': 'New Session'};
          prev_state = 'active';
@@ -714,9 +745,38 @@ function checkStateChange(){
             data: data
             ,success: function(response) {
               // console.log(response);
-              TodaysCardController(response);
-              last_ping_time = new Date().getTime();
-              console.log(last_ping_time);
+
+             if(response.status == 401){
+                $('#loading').css('display','none');// Hide the Loading GIF
+                $('#loginDiv').css('display','block');
+                $('#contentMem').css('display','none');// Hide the Loading GIF
+                showNotification('session expired');
+                logged_in = false;
+
+              }
+              else if(response.status == 400){
+                $('#loading').css('display','none');// Hide the Loading GIF
+                $('#loginDiv').css('display','block');
+                $('#contentMem').css('display','none');// Hide the Loading GIF
+                showNotification('params missing');
+                logged_in = false;
+
+              }
+              else if(response.status == 403){
+                $('#loading').css('display','none');// Hide the Loading GIF
+                $('#loginDiv').css('display','block');
+                $('#contentMem').css('display','none');// Hide the Loading GIF
+                showNotification('authorization error');
+                logged_in = false;
+
+              }
+              else{
+                logged_in = true;
+                last_ping_time = new Date().getTime();
+                console.log(last_ping_time);
+                // console.log(response);
+                TodaysCardController(response);
+              }
 
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
@@ -745,6 +805,7 @@ function showNotification(type){
   //   console.log('Notification clicked')
   // }
  }
+
 
   if(type == 'online'){
     let myNotification = new Notification('Psst...', {
@@ -799,6 +860,48 @@ function showNotification(type){
   })
 
     myNotification.onclick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+
+  if(type == 'session expired'){
+    let myNotification = new Notification('Dilbert',{
+    title : 'Dilbert',
+    body: 'Hey, your session has expired... please login again',
+    icon : 'assets/icons/png/48x48.png',
+    hasReply : true
+  })
+
+    myNotification.onClick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+  if(type == 'params missing'){
+    let myNotification = new Notification('Dilbert',{
+    title : 'Dilbert',
+    body: 'Hey, something went wrong... please login again',
+    icon : 'assets/icons/png/48x48.png',
+    hasReply : true
+  })
+
+    myNotification.onClick = () => {
+    console.log('Notification clicked')
+  }
+ }
+
+
+
+  if(type == 'authorization error'){
+    let myNotification = new Notification('Dilbert',{
+    title : 'Dilbert',
+    body: 'Hey, you do not have permissions to login',
+    icon : 'assets/icons/png/48x48.png',
+    hasReply : true
+  })
+
+    myNotification.onClick = () => {
     console.log('Notification clicked')
   }
  }
