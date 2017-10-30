@@ -18,6 +18,7 @@ var AutoLaunch = require('auto-launch');
 
 var dilbertAutoLauncher = new AutoLaunch({
   name: 'DilbertApp',
+  isHidden: true
   // path: '/Applications/Dilbert-app'
 });
 
@@ -46,8 +47,8 @@ let mainWindow = null;
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 400, height: 600, 
-                                  // resizable: false,
-                                  // fullscreen: false,
+                                  resizable: false,
+                                  fullscreen: false,
       icon : path.join(__dirname, 'assets/icons/win/128x128.ico')})
 
   // and load the index.html of the app.
@@ -78,10 +79,10 @@ function createWindow () {
 app.on('ready', createWindow)
 
 
-app.setLoginItemSettings({
-  openAtLogin: true,
-  openAsHidden : true
-})
+// app.setLoginItemSettings({
+//   openAtLogin: true,
+//   openAsHidden : true
+// })
 
 
 // Quit when all windows are closed.

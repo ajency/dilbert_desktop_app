@@ -13,7 +13,8 @@ const storage = require('electron-json-storage');
 const { remote } = require('electron');
 const url = require('url');
 const { parse } = require('url');
-// var axios = require('axios')
+
+var axios = require('axios')
 var moment = require('moment');
 var website_url = "http://dilbert4.ajency.in/api";
 
@@ -327,7 +328,11 @@ function signInWithPopup () {
 
     authWindow.on('closed', () => {
       // TODO: Handle this smoothly
+      $('#loading').css('display','none');
+      
       throw new Error('Auth window was closed by user')
+
+
     })
 
     authWindow.webContents.on('will-navigate', (event, url) => {

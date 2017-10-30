@@ -1,6 +1,6 @@
 {
   "name": "DilbertApp",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "An app to keep track of hours spent by user on PC.",
   "main": "main.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "Electron",
     "Dilbert"
   ],
-  "author": "Sujit Gawas",
+  "author": "Sujit Gawas, Inc <sujit@ajency.in>",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "1.4.0",
@@ -28,6 +28,7 @@
   "dependencies": {
     "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
     "auto-launch": "^5.0.1",
+    "axios": "^0.17.0",
     "electron-json-storage": "^4.0.2",
     "jquery": "^3.2.1",
     "moment": "^2.19.1",
@@ -36,7 +37,6 @@
   "build": {
     "linux": {
       "target": [
-        "AppImage",
         "deb"
       ],
       "icon": "assets/icons/png"
