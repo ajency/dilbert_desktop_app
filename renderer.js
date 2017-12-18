@@ -757,7 +757,7 @@ function checkStateChange(){
     if(logged_in && online){
       
       console.log("Pinging server after 1 minutes", logged_in);
-      let time_difference_btwn_two_ping = (new Date().getTime() - last_ping_time) / 60000;
+      let time_difference_btwn_two_ping = (new Date().getTime() - last_ping_time) * 60000;
       console.log(time_difference_btwn_two_ping);
       
 

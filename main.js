@@ -50,8 +50,8 @@ function createWindow () {
 
      console.log("Opening new browser window");
      mainWindow = new BrowserWindow({width: 400, height: 600, 
-                                  // resizable: false,
-                                  // fullscreen: false,
+                                  resizable: false,
+                                  fullscreen: false,
       icon : path.join(__dirname, 'assets/icons/mac/128x128.icns')})
   
  
@@ -63,7 +63,7 @@ function createWindow () {
     slashes: true
 
   }))
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
