@@ -1,5 +1,5 @@
 {
-  "name": "DilbertApp",
+  "name": "Dilbert4",
   "version": "2.2.0",
   "description": "An app to keep track of hours spent by user on PC.",
   "main": "main.js",
@@ -35,15 +35,12 @@
     "qs-parser": "^0.4.8"
   },
   "build": {
-    "linux": {
+    "mac": {
       "target": [
-        "deb"
+        "dmg"
       ],
-      "icon": "assets/icons/png"
-    },
-    "win": {
-      "target": "NSIS",
-      "icon": "assets/icons/win/128x128.ico"
+      "icon": "assets/icons/mac/128x128.icns"
     }
+  
   }
 }
