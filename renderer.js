@@ -495,7 +495,7 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
                     }
                   }     
                   
-                }, 10000);
+                }, ping_freq);
 
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
                 console.log("state 4");
