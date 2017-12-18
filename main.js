@@ -13,7 +13,7 @@ const url = require('url')
 
 
 
-// Code for autolauch on start up
+// Code for autolauch on start up for linux
 var AutoLaunch = require('auto-launch');
 
 var dilbertAutoLauncher = new AutoLaunch({
@@ -87,6 +87,7 @@ function createWindow () {
 app.on('ready', createWindow)
 
 
+// Check for multiple instances of the app
 var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
     // Someone tried to run a second instance, we should focus our window.
     console.log("Check for multiple instances");
@@ -102,6 +103,7 @@ var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) 
     return;
   }
 
+// Auto lauch for macOS and Windows 
 // app.setLoginItemSettings({
 //   openAtLogin: true,
 //   openAsHidden : true
