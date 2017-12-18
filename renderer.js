@@ -459,8 +459,12 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
               
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
                 setTimeout(function(){ 
-                  console.log('******* Ping failed .... Calling idleState again');
-                  idleState(new_user_data.data.idle_time);
+                  console.log("If ping fails logged_in ---", logged_in);
+                  if(!logged_in){
+                    console.log('******* Ping failed .... Calling idleState again');
+                    idleState(new_user_data.data.idle_time);  
+                  }
+                  
                 }, ping_freq);
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
                 console.log("state 4");
