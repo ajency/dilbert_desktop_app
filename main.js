@@ -14,30 +14,30 @@ const url = require('url')
 
 
 // Code for autolauch on start up for linux
-var AutoLaunch = require('auto-launch');
+// var AutoLaunch = require('auto-launch');
 
-var dilbertAutoLauncher = new AutoLaunch({
-  name: 'DilbertApp',
-  isHidden: true
-  // path: '/Applications/Dilbert-app'
-});
+// var dilbertAutoLauncher = new AutoLaunch({
+//   name: 'DilbertApp',
+//   isHidden: true
+//   // path: '/Applications/Dilbert-app'
+// });
 
-dilbertAutoLauncher.enable();
+// dilbertAutoLauncher.enable();
 
-//minecraftAutoLauncher.disable();
+// //minecraftAutoLauncher.disable();
 
 
-dilbertAutoLauncher.isEnabled()
-.then(function(isEnabled){
-  if(isEnabled){
-      return;
-  }
-  dilbertAutoLauncher.enable();
-})
-.catch(function(err){
-    // handle error
-    console.log("auto lauch failed");
-});
+// dilbertAutoLauncher.isEnabled()
+// .then(function(isEnabled){
+//   if(isEnabled){
+//       return;
+//   }
+//   dilbertAutoLauncher.enable();
+// })
+// .catch(function(err){
+//     // handle error
+//     console.log("auto lauch failed");
+// });
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -52,7 +52,7 @@ function createWindow () {
      mainWindow = new BrowserWindow({width: 400, height: 600, 
                                   // resizable: false,
                                   // fullscreen: false,
-      icon : path.join(__dirname, 'assets/icons/win/128x128.ico')})
+      icon : path.join(__dirname, 'assets/icons/mac/128x128.icns')})
   
  
 

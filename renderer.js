@@ -40,6 +40,8 @@ var from_state = 'active' , to_state, current_state = 'active', prev_state ='act
 var logged_in = false;
 var sleep_flag = false;
 var last_ping_time;
+var retries;
+var no_of_times_retried = 0;
 
 function openInBrowserWindow(){
   console.log('inside openInBrowserWindow');
@@ -86,6 +88,8 @@ function checkCookies(){
       if(data.data){
        new_user_data = data;
        idleState(new_user_data.data.idle_time);
+       retries =new_user_data.data.retries;
+       console.log("retries if the ping fails ----",retries);
        document.getElementById("name").innerHTML = new_user_data.data.name;
        showNotification('login');
 
@@ -183,6 +187,9 @@ function login(){
             console.log('---------------------------------------------');
 
             idleState(new_user_data.data.idle_time);
+            retries =new_user_data.data.retries;
+            console.log("retries if the ping fails ----",retries);
+
             document.getElementById("name").innerHTML = new_user_data.data.name;
             showNotification('login');
 
@@ -401,6 +408,8 @@ function fetchGoogleProfile (accessToken) {
 function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set to default i.e. 1
   let $ = require('jquery') ;
   var website_url = "https://dilbert4.ajency.in/api";
+  // var no_of_times_retried = 0;
+  // retries = 5;
   
   console.log("inside idleState");
 
@@ -458,14 +467,36 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
               }
               
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+                console.log("retries ----------",retries);
                 setTimeout(function(){ 
-                  console.log("If ping fails logged_in ---", logged_in);
-                  if(!logged_in){
-                    console.log('******* Ping failed .... Calling idleState again');
-                    idleState(new_user_data.data.idle_time);  
+
+                  if(retries != undefined){
+                    console.log("retries is defined ....");
+                    console.log("no_of_times_retried ----", no_of_times_retried);
+                    no_of_times_retried +=1;
+                    if(no_of_times_retried <= retries){
+                       console.log("If ping fails logged_in ---", logged_in);
+                       if(!logged_in){
+                        console.log('******* Ping failed .... Calling idleState again');
+                        idleState(new_user_data.data.idle_time);  
+                      }
+                    }
+                    else{
+                      console.log("retries limit over ...User has no internet connection")
+                    }
                   }
+
+                  else{
+                    console.log("retries is not defined...");
+                    if(!logged_in){
+                      console.log('******* Ping failed .... Calling idleState again');
+                      idleState(new_user_data.data.idle_time);  
+                    }
+                  }     
                   
-                }, ping_freq);
+                }, 10000);
+
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
                 console.log("state 4");
               } else if (XMLHttpRequest.readyState == 0) { // Network error (i.e. connection refused, access denied due to CORS, etc.)
