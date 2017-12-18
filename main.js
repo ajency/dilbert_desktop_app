@@ -104,10 +104,10 @@ var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) 
   }
 
 // Auto lauch for macOS and Windows 
-// app.setLoginItemSettings({
-//   openAtLogin: true,
-//   openAsHidden : true
-// })
+app.setLoginItemSettings({
+  openAtLogin: true,
+  openAsHidden : true
+})
 
 
 // Quit when all windows are closed.
