@@ -45,11 +45,16 @@ dilbertAutoLauncher.isEnabled()
 let mainWindow = null;
 
 function createWindow () {
+  console.log("inside createWindow");
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 400, height: 600, 
-                                  resizable: false,
-                                  fullscreen: false,
+
+     console.log("Opening new browser window");
+     mainWindow = new BrowserWindow({width: 400, height: 600, 
+                                  // resizable: false,
+                                  // fullscreen: false,
       icon : path.join(__dirname, 'assets/icons/win/128x128.ico')})
+  
+ 
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -58,7 +63,7 @@ function createWindow () {
     slashes: true
 
   }))
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -72,12 +77,30 @@ function createWindow () {
     console.log("main window closed");
     mainWindow = null
   })
+
+
+
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
+
+var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+    // Someone tried to run a second instance, we should focus our window.
+    console.log("Check for multiple instances");
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+
+  if (shouldQuit) {
+    console.log("shouldQuit");
+    app.quit();
+    return;
+  }
 
 // app.setLoginItemSettings({
 //   openAtLogin: true,
@@ -106,7 +129,6 @@ app.on('activate', function () {
 
   
 })
-
 
 
 // In this file you can include the rest of your app's specific main process

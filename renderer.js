@@ -16,7 +16,7 @@ const { parse } = require('url');
 
 var axios = require('axios')
 var moment = require('moment');
-var website_url = "http://dilbert4.ajency.in/api";
+var website_url = "https://dilbert4.ajency.in/api";
 
 
 var { ipcRenderer } = require('electron');  
@@ -152,7 +152,7 @@ function login(){
 	  		console.log(data);
 
 	  		// API request
-      var website_url = "http://dilbert4.ajency.in/api";
+      var website_url = "https://dilbert4.ajency.in/api";
 
       axios.get(website_url + '/api/login/google/en?token=' + tokens.access_token).then( function(response){
         console.log(response);
@@ -305,7 +305,7 @@ function signInWithPopup () {
     }
     // const authUrl = `${GOOGLE_AUTHORIZATION_URL}?${qs.stringify(urlParams)}`
       const authUrl = GOOGLE_AUTHORIZATION_URL + '?response_type=code' + '&redirect_uri='+GOOGLE_REDIRECT_URI + '&client_id='+GOOGLE_CLIENT_ID+'&scope=profile email';
-   console.log(authUrl);
+      console.log(authUrl);
 
     function handleNavigation (url) {
       console.log('inside handleNavigation');
@@ -400,9 +400,12 @@ function fetchGoogleProfile (accessToken) {
 
 function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set to default i.e. 1
   let $ = require('jquery') ;
-  var website_url = "http://dilbert4.ajency.in/api";
+  var website_url = "https://dilbert4.ajency.in/api";
   
   console.log("inside idleState");
+
+  let ping_freq = new_user_data.data.ping_freq * 60000;
+  console.log("ping_freq......inside idleState", ping_freq);
   console.log(idleInterval_C);
 
   idleInterval = idleInterval_C;
@@ -455,6 +458,10 @@ function idleState(idleInterval_C = 1) { // if idleInterval_C is null, then set 
               }
               
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+                setTimeout(function(){ 
+                  console.log('******* Ping failed .... Calling idleState again');
+                  idleState(new_user_data.data.idle_time);
+                }, ping_freq);
               if (XMLHttpRequest.readyState == 4) { // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
                 console.log("state 4");
               } else if (XMLHttpRequest.readyState == 0) { // Network error (i.e. connection refused, access denied due to CORS, etc.)
@@ -714,7 +721,7 @@ function checkStateChange(){
   setInterval(function(){
     if(logged_in && online){
       
-      console.log("Pinging server after 3 minutes", logged_in);
+      console.log("Pinging server after 1 minutes", logged_in);
       let time_difference_btwn_two_ping = (new Date().getTime() - last_ping_time) / 60000;
       console.log(time_difference_btwn_two_ping);
       
