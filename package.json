@@ -1,29 +1,46 @@
 {
-  "name": "Dilbert-app",
-  "version": "1.0.0",
+  "name": "Dilbert4",
+  "version": "2.3.0",
   "description": "An app to keep track of hours spent by user on PC.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "build:all": "electron-builder -mwl",
+    "build:mac": "electron-builder --mac",
     "pack": "electron-builder --dir",
-    "rebuild": "electron-rebuild --version 1.7.8 -f -w robotjs.node"
+    "rebuild:electron": "npm rebuild --runtime=electron --target=1.4.0 --disturl=https://atom.io/download/atom-shell --abi=50",
+    "dist": "build"
   },
-  "repository": "https://github.com",
+  "repository": "https://github.com/ajency/dilbert_desktop_app",
   "keywords": [
     "Electron",
     "Dilbert"
   ],
-  "author": "Sujit Gawas",
+  "author": "Sujit Gawas, Inc <sujit@ajency.in>",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "~1.7.8",
+    "electron": "1.4.0",
     "electron-builder": "^19.37.2",
     "electron-packager": "^9.1.0",
     "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
+    "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
+    "auto-launch": "^5.0.1",
+    "axios": "^0.17.0",
+    "electron-json-storage": "^4.0.2",
     "jquery": "^3.2.1",
     "moment": "^2.19.1",
     "qs-parser": "^0.4.8"
+  },
+  "build": {
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "assets/icons/mac/128x128.icns"
+    }
+  
   }
 }
