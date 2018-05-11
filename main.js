@@ -11,8 +11,18 @@ let $ = require('jquery')
 const path = require('path')
 const url = require('url')
 
+const {
+  START_NOTIFICATION_SERVICE,
+  NOTIFICATION_SERVICE_STARTED,
+  NOTIFICATION_SERVICE_ERROR,
+  NOTIFICATION_RECEIVED,
+  TOKEN_UPDATED,
+} = require ('electron-push-receiver/src/constants')
 
+const { setup: setupPushReceiver } = require('electron-push-receiver');
 
+const notify = require('electron-main-notification')
+var axios = require('axios')
 // Code for autolauch on start up for linux
 // var AutoLaunch = require('auto-launch');
 
@@ -50,8 +60,8 @@ function createWindow () {
 
      console.log("Opening new browser window");
      mainWindow = new BrowserWindow({width: 400, height: 600, 
-                                  resizable: false,
-                                  fullscreen: false,
+                                  // resizable: false,
+                                  // fullscreen: false,
       icon : path.join(__dirname, 'assets/icons/mac/128x128.icns')})
   
  
@@ -63,9 +73,9 @@ function createWindow () {
     slashes: true
 
   }))
-  // mainWindow.webContents.openDevTools();
+
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -78,6 +88,11 @@ function createWindow () {
     mainWindow = null
   })
 
+// push notification code 
+  const webContents = { send : (event, data) => handlePushNotification(event, data) }
+
+  // Initialize electron-push-receiver component. Should be called before 'did-finish-load'
+  setupPushReceiver(webContents);
 
 
 }
@@ -86,6 +101,35 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
+function handlePushNotification(event, data){
+  console.log("inside do doSomething", event,data);
+  if(event == 'PUSH_RECEIVER:::NOTIFICATION_SERVICE_STARTED'){
+    console.log('Notification service started');
+     axios.get('https://us-central1-fir-test-1303b.cloudfunctions.net/helloWorld?token='+data)
+     .then( function(response){
+        console.log("response ===>",response);
+      })
+     .catch( function(error){
+        console.log("error=====>", error);
+     })
+  }
+  if(event == 'PUSH_RECEIVER:::NOTIFICATION_RECEIVED'){
+    if (data.notification.body){
+      // payload has a body, so show it to the user
+      console.log('display notification')
+      notify(data.notification.title, {
+        body: data.notification.body
+      }, ()=>{
+        console.log("The notification got clicked on!")
+      }) 
+    } else {
+      // payload has no body, so consider it silent (and just consider the data portion)
+      console.log('do something with the key/value pairs in the data', serverNotificationPayload.data)
+    }
+  }
+  
+ 
+}
 
 // Check for multiple instances of the app
 var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {

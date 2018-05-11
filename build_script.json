@@ -1,0 +1,21 @@
+ "build": {
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "assets/icons/mac/128x128.icns"
+    }
+  }
+
+  "build": {
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "icon": "assets/icons/png"
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "assets/icons/win/128x128.ico"
+    }
+  }

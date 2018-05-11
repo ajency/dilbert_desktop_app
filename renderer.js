@@ -33,6 +33,14 @@ const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
 const SYSTEM_IDLE = require('@paulcbetts/system-idle-time');
 const IDLE_THRESHOLD = 60000; // 1 minute
 
+const {
+  START_NOTIFICATION_SERVICE,
+  NOTIFICATION_SERVICE_STARTED,
+  NOTIFICATION_SERVICE_ERROR,
+  NOTIFICATION_RECEIVED,
+  TOKEN_UPDATED,
+} = require ('electron-push-receiver/src/constants')
+
 var user_data
 var org_data;
 var new_user_data;
@@ -55,6 +63,13 @@ function openDashboard(){
   shell.openExternal('http://dilbert4.ajency.in')
 
 }
+
+// push notifications code
+
+// Start service
+const senderId = '271659757040' // <-- replace with FCM sender ID from FCM web admin under Settings->Cloud Messaging
+console.log('starting service and registering a client')
+ipcRenderer.send(START_NOTIFICATION_SERVICE, senderId)
 
 // ipcRenderer.on('ping' , (event,arg) =>{
 //   console.log(arg);

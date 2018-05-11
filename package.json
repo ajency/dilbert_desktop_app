@@ -1,5 +1,5 @@
 {
-  "name": "Dilbert4",
+  "name": "Dilbert4_push_notification",
   "version": "2.3.0",
   "description": "An app to keep track of hours spent by user on PC.",
   "main": "main.js",
@@ -20,7 +20,7 @@
   "author": "Sujit Gawas, Inc <sujit@ajency.in>",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "1.4.0",
+    "electron": "1.8.6",
     "electron-builder": "^19.37.2",
     "electron-packager": "^9.1.0",
     "electron-rebuild": "^1.6.0"
@@ -30,17 +30,17 @@
     "auto-launch": "^5.0.1",
     "axios": "^0.17.0",
     "electron-json-storage": "^4.0.2",
+    "electron-main-notification": "^1.0.1",
+    "electron-push-receiver": "^2.0.0",
     "jquery": "^3.2.1",
     "moment": "^2.19.1",
     "qs-parser": "^0.4.8"
   },
   "build": {
-    "mac": {
-      "target": [
-        "dmg"
-      ],
-      "icon": "assets/icons/mac/128x128.icns"
+   "win": {
+      "target": "NSIS",
+      "icon": "assets/icons/win/128x128.ico"
     }
-  
   }
+  
 }
