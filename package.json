@@ -37,9 +37,11 @@
     "qs-parser": "^0.4.8"
   },
   "build": {
-   "win": {
-      "target": "NSIS",
-      "icon": "assets/icons/win/128x128.ico"
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "assets/icons/mac/128x128.icns"
     }
   }
   

@@ -110,7 +110,7 @@ function handlePushNotification(event, data){
     console.log('Notification service started');
      axios.get('https://us-central1-fir-test-1303b.cloudfunctions.net/helloWorld?token='+data)
      .then( function(response){
-        console.log("response ===>",response);
+        console.log("response ===>");
       })
      .catch( function(error){
         console.log("error=====>", error);
@@ -148,15 +148,23 @@ function handlePushNotification(event, data){
 // Check for multiple instances of the app
 var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
     // Someone tried to run a second instance, we should focus our window.
+    console.log("commandLine ==> ", commandLine);
+    console.log("workingDirectory ==>", workingDirectory);
     console.log("Check for multiple instances");
+    console.log("BrowserWindow.getAllWindows() ===>", BrowserWindow.getAllWindows());
+    console.log("app =====>", app);
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
+    }
+    else{
+      createWindow();
     }
   });
 
   if (shouldQuit) {
     console.log("shouldQuit");
+    console.log("BrowserWindow.getAllWindows() ===>", BrowserWindow.getAllWindows());
     app.quit();
     return;
   }
