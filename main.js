@@ -88,18 +88,21 @@ function createWindow () {
     mainWindow = null
   })
 
-// push notification code 
-  const webContents = { send : (event, data) => handlePushNotification(event, data) }
-
-  // Initialize electron-push-receiver component. Should be called before 'did-finish-load'
-  setupPushReceiver(webContents);
 
 
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', function(){
+  createWindow();
+  // push notification code 
+  const webContents = { send : (event, data) => handlePushNotification(event, data) }
+
+  // Initialize electron-push-receiver component. Should be called before 'did-finish-load'
+  setupPushReceiver(webContents);
+
+})
 
 function handlePushNotification(event, data){
   console.log("inside do doSomething", event,data);
@@ -117,6 +120,17 @@ function handlePushNotification(event, data){
     if (data.notification.body){
       // payload has a body, so show it to the user
       console.log('display notification')
+      if(mainWindow){
+        if(mainWindow.isMinimized()){
+          mainWindow.restore();
+        }
+        else{
+          mainWindow.focus();
+        }
+      }
+      else{
+        createWindow();
+      }
       notify(data.notification.title, {
         body: data.notification.body
       }, ()=>{
