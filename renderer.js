@@ -30,7 +30,7 @@ const GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8101'
 const GOOGLE_CLIENT_ID = '76840133643-uka7d6nglcm3rkdfdimklkr7jtgvtk64.apps.googleusercontent.com'
 const CLIENT_SECRETE = 'Urg-oA6Yb5jqZTydRu3xpPVT'
 
-const SYSTEM_IDLE = require('@paulcbetts/system-idle-time');
+// const SYSTEM_IDLE = require('@paulcbetts/system-idle-time');
 const IDLE_THRESHOLD = 60000; // 1 minute
 
 var user_data
@@ -592,6 +592,7 @@ function get_Time(sumUp) { // for active, sumUp = 0, else sumUp = timeInterval
 function TodaysCardController(data) {
   
     console.log("Calling Controller --", data);
+    if(data && data.total_time) {
     if(data.total_time == '-' && data.start_time == '-' && data.end_time == '-'){
 
     document.getElementById("hr").innerHTML = '00';
@@ -630,6 +631,7 @@ function TodaysCardController(data) {
         }  
 
     }
+  }
 }
 
 // function clientSideUpdateTime(data){
@@ -719,7 +721,8 @@ function checkStateChange(){
     if(logged_in && online){
       sleep_flag = false;
 
-      var idletime = SYSTEM_IDLE.getIdleTime();
+      // var idletime = SYSTEM_IDLE.getIdleTime();
+      var idletime = 0;
       // console.log("idle time: ", idletime/1000);
 
       if(idletime >= idle_time  && prev_state == 'active'){

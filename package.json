@@ -26,7 +26,6 @@
     "electron-rebuild": "^1.6.0"
   },
   "dependencies": {
-    "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
     "auto-launch": "^5.0.1",
     "axios": "^0.17.0",
     "electron-json-storage": "^4.0.2",
@@ -41,6 +40,5 @@
       ],
       "icon": "assets/icons/mac/128x128.icns"
     }
-  
   }
 }
